@@ -5,4 +5,4 @@ dist/
 !.env.example
 prisma/migrations/
 *.log
-.agent.md
+agents.md
