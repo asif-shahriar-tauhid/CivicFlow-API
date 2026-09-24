@@ -14,7 +14,7 @@ model Citizen {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  @@index([email], name: "idx_patient_email")
-  @@index([isDeleted], name: "idx_patient_isDeleted")
-  @@map("patients")
+  @@index([email], name: "idx_citizen_email")
+  @@index([isDeleted], name: "idx_citizen_isDeleted")
+  @@map("citizens")
 }
