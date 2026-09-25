@@ -27,3 +27,22 @@ enum CaseType {
     COMPLAINT
     SERVICE_REQUEST
 }
+
+enum AppointmentStatus {
+    PENDING
+    CONFIRMED
+    CANCELLED
+    ONGOING
+    COMPLETED
+}
+
+enum TechnicianVerificationStatus {
+    PENDING
+    APPROVED
+    REJECTED
+}
+
+enum ScheduleStatus {
+    DRAFT
+    PUBLISHED
+}

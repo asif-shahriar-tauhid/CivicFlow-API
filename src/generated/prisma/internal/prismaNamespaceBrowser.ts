@@ -51,8 +51,11 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Appointment: 'Appointment',
   Citizen: 'Citizen',
   Payment: 'Payment',
+  Schedule: 'Schedule',
+  Technician: 'Technician',
   User: 'User'
 } as const
 
@@ -70,6 +73,25 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const AppointmentScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  joiningTime: 'joiningTime',
+  serialNumber: 'serialNumber',
+  recordUrl: 'recordUrl',
+  recordPublicId: 'recordPublicId',
+  invoiceUrl: 'invoiceUrl',
+  invoicePublicId: 'invoicePublicId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  citizenId: 'citizenId',
+  technicianId: 'technicianId',
+  scheduleId: 'scheduleId'
+} as const
+
+export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
 
 
 export const CitizenScalarFieldEnum = {
@@ -104,11 +126,59 @@ export const PaymentScalarFieldEnum = {
   refundAmount: 'refundAmount',
   refundReason: 'refundReason',
   refundAt: 'refundAt',
+  appointmentId: 'appointmentId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const ScheduleScalarFieldEnum = {
+  id: 'id',
+  startDateTime: 'startDateTime',
+  endDateTime: 'endDateTime',
+  totalSlots: 'totalSlots',
+  availableSlots: 'availableSlots',
+  meetingLink: 'meetingLink',
+  status: 'status',
+  isDeleted: 'isDeleted',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  technicianId: 'technicianId'
+} as const
+
+export type ScheduleScalarFieldEnum = (typeof ScheduleScalarFieldEnum)[keyof typeof ScheduleScalarFieldEnum]
+
+
+export const TechnicianScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  address: 'address',
+  specialization: 'specialization',
+  licenseNumber: 'licenseNumber',
+  qualifications: 'qualifications',
+  experienceYears: 'experienceYears',
+  bio: 'bio',
+  technicianFee: 'technicianFee',
+  contactNumber: 'contactNumber',
+  verificationStatus: 'verificationStatus',
+  rejectionReason: 'rejectionReason',
+  reviewedBy: 'reviewedBy',
+  reviewedAt: 'reviewedAt',
+  resume: 'resume',
+  resumePublicId: 'resumePublicId',
+  additionalFiles: 'additionalFiles',
+  isDeleted: 'isDeleted',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+} as const
+
+export type TechnicianScalarFieldEnum = (typeof TechnicianScalarFieldEnum)[keyof typeof TechnicianScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {
