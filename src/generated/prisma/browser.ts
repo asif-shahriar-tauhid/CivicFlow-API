@@ -38,6 +38,16 @@ export type Payment = Prisma.PaymentModel
  */
 export type Schedule = Prisma.ScheduleModel
 /**
+ * Model RequestCategory
+ * 
+ */
+export type RequestCategory = Prisma.RequestCategoryModel
+/**
+ * Model ServiceRequest
+ * 
+ */
+export type ServiceRequest = Prisma.ServiceRequestModel
+/**
  * Model Technician
  * 
  */

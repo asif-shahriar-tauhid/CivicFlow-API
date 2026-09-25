@@ -6,3 +6,4 @@ dist/
 prisma/migrations/
 *.log
 agents.md
+PROJECT_ROADMAP.md

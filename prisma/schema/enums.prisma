@@ -28,6 +28,22 @@ enum CaseType {
     SERVICE_REQUEST
 }
 
+enum RequestStatus {
+    SUBMITTED
+    IN_REVIEW
+    IN_PROGRESS
+    RESOLVED
+    CLOSED
+    REJECTED
+}
+
+enum RequestPriority {
+    LOW
+    NORMAL
+    HIGH
+    URGENT
+}
+
 enum AppointmentStatus {
     PENDING
     CONFIRMED

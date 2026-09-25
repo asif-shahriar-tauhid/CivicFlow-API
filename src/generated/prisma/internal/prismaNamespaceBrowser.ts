@@ -55,6 +55,8 @@ export const ModelName = {
   Citizen: 'Citizen',
   Payment: 'Payment',
   Schedule: 'Schedule',
+  RequestCategory: 'RequestCategory',
+  ServiceRequest: 'ServiceRequest',
   Technician: 'Technician',
   User: 'User'
 } as const
@@ -150,6 +152,42 @@ export const ScheduleScalarFieldEnum = {
 } as const
 
 export type ScheduleScalarFieldEnum = (typeof ScheduleScalarFieldEnum)[keyof typeof ScheduleScalarFieldEnum]
+
+
+export const RequestCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RequestCategoryScalarFieldEnum = (typeof RequestCategoryScalarFieldEnum)[keyof typeof RequestCategoryScalarFieldEnum]
+
+
+export const ServiceRequestScalarFieldEnum = {
+  id: 'id',
+  requestNumber: 'requestNumber',
+  title: 'title',
+  description: 'description',
+  caseType: 'caseType',
+  status: 'status',
+  priority: 'priority',
+  location: 'location',
+  department: 'department',
+  resolutionSummary: 'resolutionSummary',
+  resolvedAt: 'resolvedAt',
+  isDeleted: 'isDeleted',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  citizenId: 'citizenId',
+  categoryId: 'categoryId',
+  createdById: 'createdById'
+} as const
+
+export type ServiceRequestScalarFieldEnum = (typeof ServiceRequestScalarFieldEnum)[keyof typeof ServiceRequestScalarFieldEnum]
 
 
 export const TechnicianScalarFieldEnum = {

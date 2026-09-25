@@ -271,6 +271,7 @@ export type UserWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   citizen?: Prisma.XOR<Prisma.CitizenNullableScalarRelationFilter, Prisma.CitizenWhereInput> | null
+  createdRequests?: Prisma.ServiceRequestListRelationFilter
   technicians?: Prisma.TechnicianListRelationFilter
 }
 
@@ -292,6 +293,7 @@ export type UserOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   citizen?: Prisma.CitizenOrderByWithRelationInput
+  createdRequests?: Prisma.ServiceRequestOrderByRelationAggregateInput
   technicians?: Prisma.TechnicianOrderByRelationAggregateInput
 }
 
@@ -316,6 +318,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   citizen?: Prisma.XOR<Prisma.CitizenNullableScalarRelationFilter, Prisma.CitizenWhereInput> | null
+  createdRequests?: Prisma.ServiceRequestListRelationFilter
   technicians?: Prisma.TechnicianListRelationFilter
 }, "id" | "email" | "googleId">
 
@@ -381,6 +384,7 @@ export type UserCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   citizen?: Prisma.CitizenCreateNestedOneWithoutUserInput
+  createdRequests?: Prisma.ServiceRequestCreateNestedManyWithoutCreatedByInput
   technicians?: Prisma.TechnicianCreateNestedManyWithoutUserInput
 }
 
@@ -402,6 +406,7 @@ export type UserUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   citizen?: Prisma.CitizenUncheckedCreateNestedOneWithoutUserInput
+  createdRequests?: Prisma.ServiceRequestUncheckedCreateNestedManyWithoutCreatedByInput
   technicians?: Prisma.TechnicianUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -423,6 +428,7 @@ export type UserUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   citizen?: Prisma.CitizenUpdateOneWithoutUserNestedInput
+  createdRequests?: Prisma.ServiceRequestUpdateManyWithoutCreatedByNestedInput
   technicians?: Prisma.TechnicianUpdateManyWithoutUserNestedInput
 }
 
@@ -444,6 +450,7 @@ export type UserUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   citizen?: Prisma.CitizenUncheckedUpdateOneWithoutUserNestedInput
+  createdRequests?: Prisma.ServiceRequestUncheckedUpdateManyWithoutCreatedByNestedInput
   technicians?: Prisma.TechnicianUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -580,6 +587,20 @@ export type UserUpdateOneRequiredWithoutCitizenNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCitizenInput, Prisma.UserUpdateWithoutCitizenInput>, Prisma.UserUncheckedUpdateWithoutCitizenInput>
 }
 
+export type UserCreateNestedOneWithoutCreatedRequestsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedRequestsInput, Prisma.UserUncheckedCreateWithoutCreatedRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCreatedRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedRequestsInput, Prisma.UserUncheckedCreateWithoutCreatedRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedRequestsInput
+  upsert?: Prisma.UserUpsertWithoutCreatedRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedRequestsInput, Prisma.UserUpdateWithoutCreatedRequestsInput>, Prisma.UserUncheckedUpdateWithoutCreatedRequestsInput>
+}
+
 export type UserCreateNestedOneWithoutTechniciansInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutTechniciansInput, Prisma.UserUncheckedCreateWithoutTechniciansInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutTechniciansInput
@@ -623,6 +644,7 @@ export type UserCreateWithoutCitizenInput = {
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  createdRequests?: Prisma.ServiceRequestCreateNestedManyWithoutCreatedByInput
   technicians?: Prisma.TechnicianCreateNestedManyWithoutUserInput
 }
 
@@ -643,6 +665,7 @@ export type UserUncheckedCreateWithoutCitizenInput = {
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  createdRequests?: Prisma.ServiceRequestUncheckedCreateNestedManyWithoutCreatedByInput
   technicians?: Prisma.TechnicianUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -679,6 +702,7 @@ export type UserUpdateWithoutCitizenInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdRequests?: Prisma.ServiceRequestUpdateManyWithoutCreatedByNestedInput
   technicians?: Prisma.TechnicianUpdateManyWithoutUserNestedInput
 }
 
@@ -699,6 +723,107 @@ export type UserUncheckedUpdateWithoutCitizenInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdRequests?: Prisma.ServiceRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  technicians?: Prisma.TechnicianUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutCreatedRequestsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  authProvider?: $Enums.AuthProvider
+  emailVerified?: boolean
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  needPasswordChange?: boolean
+  imageUrl?: string
+  imagePublicId?: string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  citizen?: Prisma.CitizenCreateNestedOneWithoutUserInput
+  technicians?: Prisma.TechnicianCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCreatedRequestsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  authProvider?: $Enums.AuthProvider
+  emailVerified?: boolean
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  needPasswordChange?: boolean
+  imageUrl?: string
+  imagePublicId?: string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  citizen?: Prisma.CitizenUncheckedCreateNestedOneWithoutUserInput
+  technicians?: Prisma.TechnicianUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCreatedRequestsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedRequestsInput, Prisma.UserUncheckedCreateWithoutCreatedRequestsInput>
+}
+
+export type UserUpsertWithoutCreatedRequestsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedRequestsInput, Prisma.UserUncheckedUpdateWithoutCreatedRequestsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedRequestsInput, Prisma.UserUncheckedCreateWithoutCreatedRequestsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedRequestsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedRequestsInput, Prisma.UserUncheckedUpdateWithoutCreatedRequestsInput>
+}
+
+export type UserUpdateWithoutCreatedRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  needPasswordChange?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  imagePublicId?: Prisma.StringFieldUpdateOperationsInput | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  citizen?: Prisma.CitizenUpdateOneWithoutUserNestedInput
+  technicians?: Prisma.TechnicianUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  needPasswordChange?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  imagePublicId?: Prisma.StringFieldUpdateOperationsInput | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  citizen?: Prisma.CitizenUncheckedUpdateOneWithoutUserNestedInput
   technicians?: Prisma.TechnicianUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -720,6 +845,7 @@ export type UserCreateWithoutTechniciansInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   citizen?: Prisma.CitizenCreateNestedOneWithoutUserInput
+  createdRequests?: Prisma.ServiceRequestCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTechniciansInput = {
@@ -740,6 +866,7 @@ export type UserUncheckedCreateWithoutTechniciansInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   citizen?: Prisma.CitizenUncheckedCreateNestedOneWithoutUserInput
+  createdRequests?: Prisma.ServiceRequestUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTechniciansInput = {
@@ -776,6 +903,7 @@ export type UserUpdateWithoutTechniciansInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   citizen?: Prisma.CitizenUpdateOneWithoutUserNestedInput
+  createdRequests?: Prisma.ServiceRequestUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTechniciansInput = {
@@ -796,6 +924,7 @@ export type UserUncheckedUpdateWithoutTechniciansInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   citizen?: Prisma.CitizenUncheckedUpdateOneWithoutUserNestedInput
+  createdRequests?: Prisma.ServiceRequestUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 
@@ -804,10 +933,12 @@ export type UserUncheckedUpdateWithoutTechniciansInput = {
  */
 
 export type UserCountOutputType = {
+  createdRequests: number
   technicians: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  createdRequests?: boolean | UserCountOutputTypeCountCreatedRequestsArgs
   technicians?: boolean | UserCountOutputTypeCountTechniciansArgs
 }
 
@@ -819,6 +950,13 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
    * Select specific fields to fetch from the UserCountOutputType
    */
   select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreatedRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ServiceRequestWhereInput
 }
 
 /**
@@ -847,6 +985,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   updatedAt?: boolean
   citizen?: boolean | Prisma.User$citizenArgs<ExtArgs>
+  createdRequests?: boolean | Prisma.User$createdRequestsArgs<ExtArgs>
   technicians?: boolean | Prisma.User$techniciansArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -911,6 +1050,7 @@ export type UserSelectScalar = {
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "authProvider" | "emailVerified" | "role" | "status" | "needPasswordChange" | "imageUrl" | "imagePublicId" | "isDeleted" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   citizen?: boolean | Prisma.User$citizenArgs<ExtArgs>
+  createdRequests?: boolean | Prisma.User$createdRequestsArgs<ExtArgs>
   technicians?: boolean | Prisma.User$techniciansArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -921,6 +1061,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     citizen: Prisma.$CitizenPayload<ExtArgs> | null
+    createdRequests: Prisma.$ServiceRequestPayload<ExtArgs>[]
     technicians: Prisma.$TechnicianPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1335,6 +1476,7 @@ readonly fields: UserFieldRefs;
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   citizen<T extends Prisma.User$citizenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$citizenArgs<ExtArgs>>): Prisma.Prisma__CitizenClient<runtime.Types.Result.GetResult<Prisma.$CitizenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  createdRequests<T extends Prisma.User$createdRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   technicians<T extends Prisma.User$techniciansArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$techniciansArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechnicianPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1790,6 +1932,30 @@ export type User$citizenArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    */
   include?: Prisma.CitizenInclude<ExtArgs> | null
   where?: Prisma.CitizenWhereInput
+}
+
+/**
+ * User.createdRequests
+ */
+export type User$createdRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ServiceRequest
+   */
+  select?: Prisma.ServiceRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ServiceRequest
+   */
+  omit?: Prisma.ServiceRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServiceRequestInclude<ExtArgs> | null
+  where?: Prisma.ServiceRequestWhereInput
+  orderBy?: Prisma.ServiceRequestOrderByWithRelationInput | Prisma.ServiceRequestOrderByWithRelationInput[]
+  cursor?: Prisma.ServiceRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ServiceRequestScalarFieldEnum | Prisma.ServiceRequestScalarFieldEnum[]
 }
 
 /**

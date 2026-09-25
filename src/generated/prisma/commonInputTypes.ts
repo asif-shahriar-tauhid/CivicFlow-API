@@ -358,6 +358,57 @@ export type EnumScheduleStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumScheduleStatusFilter<$PrismaModel>
 }
 
+export type EnumCaseTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.CaseType | Prisma.EnumCaseTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCaseTypeFilter<$PrismaModel> | $Enums.CaseType
+}
+
+export type EnumRequestStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.RequestStatus | Prisma.EnumRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RequestStatus[] | Prisma.ListEnumRequestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RequestStatus[] | Prisma.ListEnumRequestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRequestStatusFilter<$PrismaModel> | $Enums.RequestStatus
+}
+
+export type EnumRequestPriorityFilter<$PrismaModel = never> = {
+  equals?: $Enums.RequestPriority | Prisma.EnumRequestPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.RequestPriority[] | Prisma.ListEnumRequestPriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RequestPriority[] | Prisma.ListEnumRequestPriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRequestPriorityFilter<$PrismaModel> | $Enums.RequestPriority
+}
+
+export type EnumCaseTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CaseType | Prisma.EnumCaseTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCaseTypeWithAggregatesFilter<$PrismaModel> | $Enums.CaseType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCaseTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCaseTypeFilter<$PrismaModel>
+}
+
+export type EnumRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RequestStatus | Prisma.EnumRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RequestStatus[] | Prisma.ListEnumRequestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RequestStatus[] | Prisma.ListEnumRequestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.RequestStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRequestStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRequestStatusFilter<$PrismaModel>
+}
+
+export type EnumRequestPriorityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RequestPriority | Prisma.EnumRequestPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.RequestPriority[] | Prisma.ListEnumRequestPriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RequestPriority[] | Prisma.ListEnumRequestPriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRequestPriorityWithAggregatesFilter<$PrismaModel> | $Enums.RequestPriority
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRequestPriorityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRequestPriorityFilter<$PrismaModel>
+}
+
 export type EnumTechnicianVerificationStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.TechnicianVerificationStatus | Prisma.EnumTechnicianVerificationStatusFieldRefInput<$PrismaModel>
   in?: $Enums.TechnicianVerificationStatus[] | Prisma.ListEnumTechnicianVerificationStatusFieldRefInput<$PrismaModel>
@@ -754,6 +805,57 @@ export type NestedEnumScheduleStatusWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumScheduleStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumScheduleStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumCaseTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.CaseType | Prisma.EnumCaseTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCaseTypeFilter<$PrismaModel> | $Enums.CaseType
+}
+
+export type NestedEnumRequestStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.RequestStatus | Prisma.EnumRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RequestStatus[] | Prisma.ListEnumRequestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RequestStatus[] | Prisma.ListEnumRequestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRequestStatusFilter<$PrismaModel> | $Enums.RequestStatus
+}
+
+export type NestedEnumRequestPriorityFilter<$PrismaModel = never> = {
+  equals?: $Enums.RequestPriority | Prisma.EnumRequestPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.RequestPriority[] | Prisma.ListEnumRequestPriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RequestPriority[] | Prisma.ListEnumRequestPriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRequestPriorityFilter<$PrismaModel> | $Enums.RequestPriority
+}
+
+export type NestedEnumCaseTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CaseType | Prisma.EnumCaseTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCaseTypeWithAggregatesFilter<$PrismaModel> | $Enums.CaseType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCaseTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCaseTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RequestStatus | Prisma.EnumRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RequestStatus[] | Prisma.ListEnumRequestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RequestStatus[] | Prisma.ListEnumRequestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.RequestStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRequestStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRequestStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumRequestPriorityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RequestPriority | Prisma.EnumRequestPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.RequestPriority[] | Prisma.ListEnumRequestPriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RequestPriority[] | Prisma.ListEnumRequestPriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRequestPriorityWithAggregatesFilter<$PrismaModel> | $Enums.RequestPriority
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRequestPriorityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRequestPriorityFilter<$PrismaModel>
 }
 
 export type NestedEnumTechnicianVerificationStatusFilter<$PrismaModel = never> = {
