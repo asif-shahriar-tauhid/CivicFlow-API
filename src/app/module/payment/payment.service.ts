@@ -136,12 +136,12 @@ const getSinglePayment = async (paymentId: string, user: RequestUser) => {
               email: true,
               userId: true,
             },
-            technician: {
-              select: {
-                id: true,
-                name: true,
-                specialization: true,
-              },
+          },
+          technician: {
+            select: {
+              id: true,
+              name: true,
+              specialization: true,
             },
           },
           schedule: true,
