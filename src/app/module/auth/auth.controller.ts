@@ -2,28 +2,9 @@ import type { Request, Response } from "express";
 import httpStatus from "http-status";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
+import { setAuthCookies } from "../../utils/setAuthCookies";
 import type { IRequestUser } from "./auth.interface";
 import { AuthService } from "./auth.service";
-
-const setAuthCookies = (
-  res: Response,
-  accessToken: string,
-  refreshToken: string,
-) => {
-  const secure = process.env.NODE_ENV === "production";
-  res.cookie("accessToken", accessToken, {
-    httpOnly: true,
-    secure,
-    sameSite: secure ? "none" : "lax",
-    maxAge: 86400000,
-  });
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure,
-    sameSite: secure ? "none" : "lax",
-    maxAge: 604800000,
-  });
-};
 
 const registerUser = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.registerUser(req.body);
