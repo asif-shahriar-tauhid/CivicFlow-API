@@ -25,4 +25,44 @@ const getMyPayments = async (query: IQuery, user: RequestUser) => {
       appointment: { citizenId: citizen.id },
     },
   ];
+
+  const payments = await prisma.payment.findMany({
+    where: { AND: andConditions },
+    take: limit,
+    skip,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+    include: {
+      appointment: {
+        include: {
+          technician: {
+            select: {
+              id: true,
+              name: true,
+              specialization: true,
+            },
+          },
+          schedule: true,
+        },
+      },
+    },
+  });
+
+  const total = await prisma.payment.count({
+    where: { AND: andConditions },
+  });
+
+  return {
+    data: payments,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
+
+
+
