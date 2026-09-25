@@ -10,9 +10,9 @@
 */
 
 export const Role = {
-  SUPER_ADMIN: 'SUPER_ADMIN',
+  CITIZEN: 'CITIZEN',
   ADMIN: 'ADMIN',
-  USER: 'USER'
+  STAFF: 'STAFF'
 } as const
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -33,3 +33,22 @@ export const AuthProvider = {
 } as const
 
 export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]
+
+
+export const PaymentStatus = {
+  UNPAID: 'UNPAID',
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED'
+} as const
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
+export const CaseType = {
+  COMPLAINT: 'COMPLAINT',
+  SERVICE_REQUEST: 'SERVICE_REQUEST'
+} as const
+
+export type CaseType = (typeof CaseType)[keyof typeof CaseType]

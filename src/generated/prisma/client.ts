@@ -47,6 +47,11 @@ export { Prisma }
  */
 export type Citizen = Prisma.CitizenModel
 /**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
  * Model User
  * 
  */

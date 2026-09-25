@@ -1,7 +1,7 @@
 enum Role {
-    SUPER_ADMIN
+    CITIZEN
     ADMIN
-    USER
+    STAFF
 }
 
 enum UserStatus {
@@ -13,4 +13,17 @@ enum UserStatus {
 enum AuthProvider {
     CREDENTIAL
     GOOGLE
+}
+
+enum PaymentStatus {
+    UNPAID
+    PENDING
+    COMPLETED
+    FAILED
+    REFUNDED
+}
+
+enum CaseType {
+    COMPLAINT
+    SERVICE_REQUEST
 }

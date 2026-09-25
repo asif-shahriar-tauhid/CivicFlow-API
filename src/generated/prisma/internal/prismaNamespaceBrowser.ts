@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   Citizen: 'Citizen',
+  Payment: 'Payment',
   User: 'User'
 } as const
 
@@ -87,6 +88,29 @@ export const CitizenScalarFieldEnum = {
 export type CitizenScalarFieldEnum = (typeof CitizenScalarFieldEnum)[keyof typeof CitizenScalarFieldEnum]
 
 
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  amount: 'amount',
+  currency: 'currency',
+  paymentGateway: 'paymentGateway',
+  merchantInvoiceNumber: 'merchantInvoiceNumber',
+  bkashPaymentId: 'bkashPaymentId',
+  bkashTrxId: 'bkashTrxId',
+  payerReference: 'payerReference',
+  paidAt: 'paidAt',
+  gatewayResponse: 'gatewayResponse',
+  refundTrxId: 'refundTrxId',
+  refundAmount: 'refundAmount',
+  refundReason: 'refundReason',
+  refundAt: 'refundAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -117,6 +141,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -131,4 +163,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

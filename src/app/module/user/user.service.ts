@@ -1,8 +1,10 @@
-import { UploadApiResponse } from "cloudinary";
+import type { UploadApiResponse } from "cloudinary";
 import { prisma } from "../../lib/prisma";
 import { cloudinary } from "../../lib/cloudinary";
 import { AppError } from "../../utils/AppError";
 import httpStatus from "http-status";
+
+
 
 const uploadProfileImage = async (buffer: Buffer, userId: string) => {
   const currentUser = await prisma.user.findUnique({

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { AppError } from "../../utils/AppError";
 import httpStatus from "http-status";
