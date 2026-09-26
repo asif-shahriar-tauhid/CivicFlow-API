@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "description": "CivicFlow API backend",
-  "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
+    "vercel-build": "prisma generate",
     "start": "node dist/src/server.js",
     "test": "node --import tsx --test tests/**/*.test.ts",
     "format:check": "biome format ./src",

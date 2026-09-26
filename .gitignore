@@ -9,3 +9,5 @@ agents.md
 PROJECT_ROADMAP.md
 /src/generated
 tests/*
+.vercel
+.env*
