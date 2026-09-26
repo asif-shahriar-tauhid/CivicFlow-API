@@ -1,9 +1,10 @@
 import httpStatus from "http-status";
-import { IQuery, RequestUser } from "../../interfaces";
+import type { IQuery, RequestUser } from "../../interfaces";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import { PaymentWhereInput } from "../../../generated/prisma/models";
+import type { PaymentWhereInput } from "../../../generated/prisma/models";
 import { Role } from "../../../generated/prisma/enums";
+import { publishPaymentOutcome } from "../notification/notification.events";
 
 const getMyPayments = async (query: IQuery, user: RequestUser) => {
   const limit = query.limit ? Number(query.limit) : 10;
@@ -165,8 +166,28 @@ const getSinglePayment = async (paymentId: string, user: RequestUser) => {
   return payment;
 };
 
+const notifyPaymentOutcome = async (
+  paymentId: string,
+  status: "COMPLETED" | "FAILED" | "REFUNDED",
+) => {
+  const payment = await prisma.payment.findUnique({
+    where: { id: paymentId },
+    select: {
+      id: true,
+      appointment: { select: { citizen: { select: { userId: true } } } },
+    },
+  });
+  if (payment)
+    publishPaymentOutcome(
+      payment.appointment.citizen.userId,
+      payment.id,
+      status,
+    );
+};
+
 export const paymentServices = {
   getAllPayments,
   getMyPayments,
   getSinglePayment,
+  notifyPaymentOutcome,
 };

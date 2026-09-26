@@ -1,0 +1,17 @@
+model Notification {
+    id          String    @id @default(uuid())
+    recipientId String
+    eventKey    String
+    eventId     String
+    title       String
+    message     String
+    metadata    Json?
+    readAt      DateTime?
+    createdAt   DateTime  @default(now())
+
+    recipient User @relation(fields: [recipientId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+    @@unique([recipientId, eventKey, eventId], name: "uq_notification_recipient_event")
+    @@index([recipientId, readAt, createdAt], name: "idx_notification_recipient_read_created")
+    @@map("notifications")
+}

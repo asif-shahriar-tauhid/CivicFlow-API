@@ -15,6 +15,8 @@ import type {
 } from "./serviceRequest.interface";
 import { attachmentSelect } from "../attachment/attachment.service";
 import { slaServices } from "../sla/sla.service";
+import { NotificationEvent } from "../notification/notification.interface";
+import { publishNotification } from "../notification/notification.events";
 
 const requestSelect = {
   id: true,
@@ -345,7 +347,7 @@ const createServiceRequest = async (
   }
 
   try {
-    return await prisma.$transaction(async (tx) => {
+    const createdRequest = await prisma.$transaction(async (tx) => {
       await assertActiveCategory(tx, categoryId);
       const createdAt = new Date();
       const slaDueAt = await slaServices.getDueAtForCategory(
@@ -410,6 +412,19 @@ const createServiceRequest = async (
 
       return routed;
     });
+    publishNotification({
+      recipientId: createdRequest.citizen.userId,
+      eventKey: NotificationEvent.REQUEST_SUBMITTED,
+      eventId: createdRequest.id,
+      title: "Service request submitted",
+      message: `Your service request ${createdRequest.requestNumber} was submitted successfully.`,
+      metadata: {
+        requestId: createdRequest.id,
+        requestNumber: createdRequest.requestNumber,
+      },
+      sendEmail: true,
+    });
+    return createdRequest;
   } catch (error) {
     await Promise.all(
       uploadedAssets.map((asset) =>
@@ -556,7 +571,7 @@ const assignRequest = async (
   user: IRequestUser,
   allowReassign: boolean,
 ) => {
-  return prisma.$transaction(async (tx) => {
+  const assignmentResult = await prisma.$transaction(async (tx) => {
     const request = await tx.serviceRequest.findUnique({
       where: { id: requestId },
       select: {
@@ -643,6 +658,36 @@ const assignRequest = async (
       select: requestSelect,
     });
   });
+  const assignment = assignmentResult.assignments[0];
+  if (assignment) {
+    publishNotification({
+      recipientId: assignment.assignedTo.id,
+      eventKey: NotificationEvent.REQUEST_ASSIGNED,
+      eventId: assignment.id,
+      title: assignment.previousAssigneeId
+        ? "Service request reassigned"
+        : "Service request assigned",
+      message: `Service request ${assignmentResult.requestNumber} was assigned to you.`,
+      metadata: {
+        requestId: assignmentResult.id,
+        requestNumber: assignmentResult.requestNumber,
+      },
+    });
+    if (assignment.previousAssigneeId) {
+      publishNotification({
+        recipientId: assignment.previousAssigneeId,
+        eventKey: NotificationEvent.REQUEST_ASSIGNED,
+        eventId: assignment.id,
+        title: "Service request reassigned",
+        message: `Service request ${assignmentResult.requestNumber} was reassigned to another staff member.`,
+        metadata: {
+          requestId: assignmentResult.id,
+          requestNumber: assignmentResult.requestNumber,
+        },
+      });
+    }
+  }
+  return assignmentResult;
 };
 
 const getServiceRequest = async (requestId: string, user: IRequestUser) => {

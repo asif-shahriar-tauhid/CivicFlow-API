@@ -9,6 +9,8 @@ import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 import type { IRequestUser } from "../serviceRequest/serviceRequest.interface";
 import type { ISlaConfigPayload, ISlaQuery } from "./sla.interface";
+import { NotificationEvent } from "../notification/notification.interface";
+import { publishNotification } from "../notification/notification.events";
 
 const pausedStatuses = new Set<RequestStatus>([
   RequestStatus.ON_HOLD,
@@ -233,6 +235,9 @@ const escalateRequest = async (requestId: string, user: IRequestUser) => {
       departmentId: true,
       isDeleted: true,
       slaEscalationState: true,
+      requestNumber: true,
+      assignedToId: true,
+      citizen: { select: { userId: true } },
     },
   });
   if (!request || request.isDeleted)
@@ -245,7 +250,7 @@ const escalateRequest = async (requestId: string, user: IRequestUser) => {
   }
   if (request.slaEscalationState === SlaEscalationState.ESCALATED)
     return request;
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const updated = await tx.serviceRequest.update({
       where: { id: requestId },
       data: { slaEscalationState: SlaEscalationState.ESCALATED },
@@ -261,6 +266,26 @@ const escalateRequest = async (requestId: string, user: IRequestUser) => {
     });
     return updated;
   });
+  publishNotification({
+    recipientId: request.citizen.userId,
+    eventKey: NotificationEvent.SLA_BREACHED,
+    eventId: requestId,
+    title: "Service request escalation",
+    message: `Service request ${request.requestNumber} has been escalated.`,
+    metadata: { requestId, requestNumber: request.requestNumber },
+    sendEmail: true,
+  });
+  if (request.assignedToId) {
+    publishNotification({
+      recipientId: request.assignedToId,
+      eventKey: NotificationEvent.SLA_BREACHED,
+      eventId: requestId,
+      title: "SLA escalation assigned to your queue",
+      message: `Service request ${request.requestNumber} has been escalated.`,
+      metadata: { requestId, requestNumber: request.requestNumber },
+    });
+  }
+  return result;
 };
 
 export const processBreaches = async (limit = 100, now = new Date()) => {
@@ -274,7 +299,12 @@ export const processBreaches = async (limit = 100, now = new Date()) => {
     },
     orderBy: { slaDueAt: "asc" },
     take: Math.min(Math.max(limit, 1), 500),
-    select: { id: true, requestNumber: true },
+    select: {
+      id: true,
+      requestNumber: true,
+      assignedToId: true,
+      citizen: { select: { userId: true } },
+    },
   });
   let processed = 0;
   for (const candidate of candidates) {
@@ -306,7 +336,34 @@ export const processBreaches = async (limit = 100, now = new Date()) => {
       });
       return true;
     });
-    if (result) processed += 1;
+    if (result) {
+      processed += 1;
+      publishNotification({
+        recipientId: candidate.citizen.userId,
+        eventKey: NotificationEvent.SLA_BREACHED,
+        eventId: candidate.id,
+        title: "Service request SLA breached",
+        message: `Service request ${candidate.requestNumber} has passed its service deadline.`,
+        metadata: {
+          requestId: candidate.id,
+          requestNumber: candidate.requestNumber,
+        },
+        sendEmail: true,
+      });
+      if (candidate.assignedToId) {
+        publishNotification({
+          recipientId: candidate.assignedToId,
+          eventKey: NotificationEvent.SLA_BREACHED,
+          eventId: candidate.id,
+          title: "Service request SLA breached",
+          message: `Service request ${candidate.requestNumber} has passed its service deadline.`,
+          metadata: {
+            requestId: candidate.id,
+            requestNumber: candidate.requestNumber,
+          },
+        });
+      }
+    }
   }
   return { scanned: candidates.length, processed };
 };

@@ -30,6 +30,7 @@ model User {
   investigationNotes  RequestInvestigationNote[] @relation("RequestInvestigationNoteActor")
   resolutions         RequestResolution[]        @relation("RequestResolutionActor")
   slaAudits           RequestSlaAudit[]          @relation("RequestSlaAuditActor")
+  notifications       Notification[]
 
   @@index([departmentId, role, status], name: "idx_user_department_role_status")
   @@map("users")

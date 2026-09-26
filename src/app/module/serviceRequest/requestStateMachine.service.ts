@@ -5,6 +5,8 @@ import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 import type { IRequestUser } from "./serviceRequest.interface";
 import { applyStatusChange } from "../sla/sla.service";
+import { NotificationEvent } from "../notification/notification.interface";
+import { publishNotification } from "../notification/notification.events";
 
 const transitions: Record<RequestStatus, RequestStatus[]> = {
   SUBMITTED: [RequestStatus.TRIAGED, RequestStatus.REJECTED],
@@ -124,8 +126,8 @@ const transition = async (
   to: RequestStatus,
   user: IRequestUser,
   options: TransitionOptions = {},
-) =>
-  prisma.$transaction(async (tx) => {
+) => {
+  const result = await prisma.$transaction(async (tx) => {
     if (
       to === RequestStatus.RESOLVED ||
       to === RequestStatus.CLOSED ||
@@ -154,6 +156,31 @@ const transition = async (
     });
     return tx.serviceRequest.findUniqueOrThrow({ where: { id: requestId } });
   });
+  const eventKey =
+    to === RequestStatus.AWAITING_CITIZEN
+      ? NotificationEvent.REQUEST_ACTION_REQUIRED
+      : to === RequestStatus.REOPENED
+        ? NotificationEvent.REQUEST_REOPENED
+        : NotificationEvent.REQUEST_STATUS_CHANGED;
+  publishNotification({
+    recipientId: result.citizenId,
+    eventKey,
+    eventId: `${requestId}:${to}`,
+    title:
+      to === RequestStatus.AWAITING_CITIZEN
+        ? "Action needed on your request"
+        : to === RequestStatus.REOPENED
+          ? "Service request reopened"
+          : "Service request updated",
+    message:
+      to === RequestStatus.REOPENED
+        ? `Service request ${result.requestNumber} was reopened.`
+        : `Service request status changed to ${to}.`,
+    metadata: { requestId, status: to },
+    sendEmail: to === RequestStatus.AWAITING_CITIZEN,
+  });
+  return result;
+};
 
 const addInvestigationNote = async (
   requestId: string,
@@ -173,8 +200,12 @@ const addInvestigationNote = async (
     });
   });
 
-const resolve = async (requestId: string, reason: string, user: IRequestUser) =>
-  prisma.$transaction(async (tx) => {
+const resolve = async (
+  requestId: string,
+  reason: string,
+  user: IRequestUser,
+) => {
+  const result = await prisma.$transaction(async (tx) => {
     const request = await loadRequest(tx, requestId);
     assertTransition(request, RequestStatus.RESOLVED, user);
     if (!reason.trim()) {
@@ -212,6 +243,17 @@ const resolve = async (requestId: string, reason: string, user: IRequestUser) =>
     });
     return tx.serviceRequest.findUniqueOrThrow({ where: { id: requestId } });
   });
+  publishNotification({
+    recipientId: result.citizenId,
+    eventKey: NotificationEvent.REQUEST_RESOLVED,
+    eventId: requestId,
+    title: "Service request resolved",
+    message: `Service request ${result.requestNumber} was resolved.`,
+    metadata: { requestId, requestNumber: result.requestNumber },
+    sendEmail: true,
+  });
+  return result;
+};
 
 const confirm = (requestId: string, user: IRequestUser) =>
   transition(requestId, RequestStatus.CLOSED, user, {

@@ -3,9 +3,9 @@ dist/
 .env
 .env.*
 !.env.example
-prisma/migrations/
+prisma/migrations/*
 *.log
 agents.md
 PROJECT_ROADMAP.md
 /src/generated
-tests
+tests/*
