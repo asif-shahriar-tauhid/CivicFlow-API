@@ -9,6 +9,7 @@ import {
 import { validateRequest } from "../../middleware/validateRequest";
 import { serviceRequestController } from "./serviceRequest.controller";
 import { ServiceRequestValidation } from "./serviceRequest.validation";
+import { attachmentController } from "../attachment/attachment.controller";
 
 const router = Router();
 const requestRoles = [Role.CITIZEN, Role.STAFF, Role.ADMIN] as const;
@@ -50,6 +51,35 @@ router.patch(
   validateRequest(ServiceRequestValidation.updateServiceRequestSchema),
   serviceRequestController.updateServiceRequest,
 );
+router.post(
+  "/:requestId/transition",
+  auth(Role.ADMIN, Role.STAFF),
+  validateRequest(ServiceRequestValidation.transitionSchema),
+  serviceRequestController.transitionServiceRequest,
+);
+router.post(
+  "/:requestId/notes",
+  auth(Role.ADMIN, Role.STAFF),
+  validateRequest(ServiceRequestValidation.noteSchema),
+  serviceRequestController.addInvestigationNote,
+);
+router.post(
+  "/:requestId/resolve",
+  auth(Role.ADMIN, Role.STAFF),
+  validateRequest(ServiceRequestValidation.resolutionSchema),
+  serviceRequestController.resolveServiceRequest,
+);
+router.post(
+  "/:requestId/confirm",
+  auth(Role.CITIZEN),
+  serviceRequestController.confirmServiceRequest,
+);
+router.post(
+  "/:requestId/reopen",
+  auth(...requestRoles),
+  validateRequest(ServiceRequestValidation.reopenSchema),
+  serviceRequestController.reopenServiceRequest,
+);
 router.delete(
   "/:requestId",
   auth(...requestRoles),
@@ -80,22 +110,22 @@ router.post(
   attachmentUpload.single("file"),
   validateAttachmentFile,
   validateRequest(ServiceRequestValidation.createAttachmentSchema),
-  serviceRequestController.addAttachment,
+  attachmentController.addAttachment,
 );
 router.get(
   "/:requestId/attachments",
   auth(...requestRoles),
-  serviceRequestController.listAttachments,
+  attachmentController.listAttachments,
 );
 router.get(
   "/:requestId/attachments/:attachmentId",
   auth(...requestRoles),
-  serviceRequestController.getAttachment,
+  attachmentController.getAttachment,
 );
 router.delete(
   "/:requestId/attachments/:attachmentId",
   auth(...requestRoles),
-  serviceRequestController.deleteAttachment,
+  attachmentController.deleteAttachment,
 );
 
 export const ServiceRequestRoutes = router;

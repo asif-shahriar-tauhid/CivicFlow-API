@@ -13,31 +13,7 @@ import type {
   IServiceRequestQuery,
   IUpdateServiceRequestPayload,
 } from "./serviceRequest.interface";
-
-const attachmentSelect = {
-  id: true,
-  requestId: true,
-  url: true,
-  publicId: true,
-  fileName: true,
-  mimeType: true,
-  fileSize: true,
-  format: true,
-  resourceType: true,
-  caption: true,
-  uploaderId: true,
-  isDeleted: true,
-  createdAt: true,
-  updatedAt: true,
-  uploader: {
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-    },
-  },
-} satisfies Prisma.RequestAttachmentSelect;
+import { attachmentSelect } from "../attachment/attachment.service";
 
 const requestSelect = {
   id: true,
@@ -89,6 +65,25 @@ const requestSelect = {
     where: { isDeleted: false },
     orderBy: { createdAt: "asc" },
     select: attachmentSelect,
+  },
+  statusHistory: {
+    orderBy: { createdAt: "asc" },
+    select: {
+      id: true,
+      from: true,
+      to: true,
+      reason: true,
+      actorId: true,
+      createdAt: true,
+    },
+  },
+  investigationNotes: {
+    orderBy: { createdAt: "asc" },
+    select: { id: true, note: true, actorId: true, createdAt: true },
+  },
+  resolutions: {
+    orderBy: { createdAt: "asc" },
+    select: { id: true, reason: true, actorId: true, createdAt: true },
   },
 } satisfies Prisma.ServiceRequestSelect;
 
@@ -370,6 +365,15 @@ const createServiceRequest = async (
         },
         select: { id: true },
       });
+      await tx.requestStatusHistory.create({
+        data: {
+          requestId: request.id,
+          from: null,
+          to: "SUBMITTED",
+          reason: "Request submitted.",
+          actorId: user.userId,
+        },
+      });
 
       const routed = await routeRequestInTransaction(
         tx,
@@ -588,7 +592,6 @@ const assignRequest = async (
       where: { id: requestId, assignedToId: request.assignedToId },
       data: {
         assignedToId: assignee.id,
-        status: request.status === "SUBMITTED" ? "IN_REVIEW" : undefined,
         routingStatus: "ASSIGNED",
       },
     });
@@ -657,16 +660,13 @@ const updateServiceRequest = async (
         ? {
             title: payload.title,
             description: payload.description,
-            status: payload.status,
             priority: payload.priority,
             resolutionSummary: payload.resolutionSummary,
-            resolvedAt: payload.status === "RESOLVED" ? new Date() : undefined,
           }
         : {
             title: payload.title,
             description: payload.description,
             caseType: payload.caseType,
-            status: payload.status,
             priority: payload.priority,
             location: payload.location,
             address: payload.address,
@@ -677,7 +677,6 @@ const updateServiceRequest = async (
             longitude: payload.longitude,
             resolutionSummary: payload.resolutionSummary,
             category,
-            resolvedAt: payload.status === "RESOLVED" ? new Date() : undefined,
           };
 
   const shouldReroute =
@@ -736,172 +735,6 @@ const routeServiceRequest = async (requestId: string, user: IRequestUser) =>
     ),
   );
 
-const addAttachment = async (
-  requestId: string,
-  file: Express.Multer.File,
-  caption: string | undefined,
-  user: IRequestUser,
-) => {
-  const request = await getRequest(requestId);
-  const staffDepartmentId = await getStaffDepartmentId(user);
-  assertCanAccess(request, user, staffDepartmentId);
-
-  if (
-    user.role === Role.CITIZEN &&
-    (request.status === "CLOSED" ||
-      request.status === "RESOLVED" ||
-      request.status === "REJECTED")
-  ) {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      "Cannot add attachments to a closed, resolved, or rejected request.",
-    );
-  }
-
-  const uploadResult = await uploadToCloudinary(file.buffer, {
-    folder: "civicflow/evidence",
-    resource_type: "auto",
-  });
-
-  try {
-    return await prisma.$transaction(async (tx) => {
-      const attachment = await tx.requestAttachment.create({
-        data: {
-          requestId,
-          url: uploadResult.secure_url,
-          publicId: uploadResult.public_id,
-          fileName: file.originalname,
-          mimeType: file.mimetype,
-          fileSize: file.size,
-          format: uploadResult.format ?? null,
-          resourceType: uploadResult.resource_type ?? "image",
-          caption: caption?.trim() || null,
-          uploaderId: user.userId,
-        },
-        select: attachmentSelect,
-      });
-
-      return attachment;
-    });
-  } catch (error) {
-    await deleteFromCloudinary(
-      uploadResult.public_id,
-      uploadResult.resource_type ?? "image",
-    );
-    throw error;
-  }
-};
-
-const listAttachments = async (requestId: string, user: IRequestUser) => {
-  const request = await getRequest(requestId);
-  const staffDepartmentId = await getStaffDepartmentId(user);
-  assertCanAccess(request, user, staffDepartmentId);
-
-  return prisma.requestAttachment.findMany({
-    where: {
-      requestId,
-      isDeleted: false,
-    },
-    orderBy: { createdAt: "asc" },
-    select: attachmentSelect,
-  });
-};
-
-const getAttachment = async (
-  requestId: string,
-  attachmentId: string,
-  user: IRequestUser,
-) => {
-  const request = await getRequest(requestId);
-  const staffDepartmentId = await getStaffDepartmentId(user);
-  assertCanAccess(request, user, staffDepartmentId);
-
-  const attachment = await prisma.requestAttachment.findFirst({
-    where: {
-      id: attachmentId,
-      requestId,
-      isDeleted: false,
-    },
-    select: attachmentSelect,
-  });
-
-  if (!attachment) {
-    throw new AppError(httpStatus.NOT_FOUND, "Attachment not found.");
-  }
-
-  return attachment;
-};
-
-const deleteAttachment = async (
-  requestId: string,
-  attachmentId: string,
-  user: IRequestUser,
-) => {
-  const request = await getRequest(requestId);
-  const staffDepartmentId = await getStaffDepartmentId(user);
-  assertCanAccess(request, user, staffDepartmentId);
-
-  const attachment = await prisma.requestAttachment.findFirst({
-    where: {
-      id: attachmentId,
-      requestId,
-      isDeleted: false,
-    },
-    select: {
-      ...attachmentSelect,
-      uploader: {
-        select: {
-          id: true,
-          role: true,
-        },
-      },
-    },
-  });
-
-  if (!attachment) {
-    throw new AppError(httpStatus.NOT_FOUND, "Attachment not found.");
-  }
-
-  if (user.role === Role.STAFF) {
-    if (attachment.uploader.role === Role.CITIZEN) {
-      throw new AppError(
-        httpStatus.FORBIDDEN,
-        "Staff members cannot delete citizen evidence.",
-      );
-    }
-    if (attachment.uploaderId !== user.userId) {
-      throw new AppError(
-        httpStatus.FORBIDDEN,
-        "Staff members can only delete evidence they uploaded.",
-      );
-    }
-  }
-
-  if (user.role === Role.CITIZEN) {
-    if (attachment.uploaderId !== user.userId) {
-      throw new AppError(
-        httpStatus.FORBIDDEN,
-        "You can only delete attachments that you uploaded.",
-      );
-    }
-    if (request.status !== "SUBMITTED") {
-      throw new AppError(
-        httpStatus.FORBIDDEN,
-        "Evidence can only be deleted while the request is in SUBMITTED status.",
-      );
-    }
-  }
-
-  return prisma.requestAttachment.update({
-    where: { id: attachmentId },
-    data: {
-      isDeleted: true,
-      deletedAt: new Date(),
-    },
-    select: attachmentSelect,
-  });
-};
-
 const assignServiceRequest = (
   requestId: string,
   payload: IAssignmentPayload,
@@ -927,10 +760,6 @@ export const serviceRequestServices = {
   updateServiceRequest,
   deleteServiceRequest,
   routeServiceRequest,
-  addAttachment,
-  listAttachments,
-  getAttachment,
-  deleteAttachment,
   assignServiceRequest,
   reassignServiceRequest,
   getMyQueue,

@@ -25,7 +25,6 @@ export interface IUpdateServiceRequestPayload {
   title?: string;
   description?: string;
   caseType?: CaseType;
-  status?: RequestStatus;
   priority?: RequestPriority;
   location?: string;
   address?: string | null;
@@ -61,6 +60,7 @@ export interface IAssignmentPayload {
 export interface IRequestUser {
   userId: string;
   role: Role;
+  departmentId?: string | null;
 }
 
 export interface ICreateAttachmentPayload {

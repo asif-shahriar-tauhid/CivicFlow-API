@@ -30,11 +30,15 @@ enum CaseType {
 
 enum RequestStatus {
   SUBMITTED
-  IN_REVIEW
+  TRIAGED
+  ASSIGNED
   IN_PROGRESS
+  AWAITING_CITIZEN
   RESOLVED
   CLOSED
   REJECTED
+  ON_HOLD
+  REOPENED
 }
 
 enum RequestPriority {

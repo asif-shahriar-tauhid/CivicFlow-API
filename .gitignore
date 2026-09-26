@@ -8,3 +8,4 @@ prisma/migrations/
 agents.md
 PROJECT_ROADMAP.md
 /src/generated
+tests

@@ -3,11 +3,15 @@ import { z } from "zod";
 const caseType = z.enum(["COMPLAINT", "SERVICE_REQUEST"]);
 const requestStatus = z.enum([
   "SUBMITTED",
-  "IN_REVIEW",
+  "TRIAGED",
+  "ASSIGNED",
   "IN_PROGRESS",
+  "AWAITING_CITIZEN",
   "RESOLVED",
   "CLOSED",
   "REJECTED",
+  "ON_HOLD",
+  "REOPENED",
 ]);
 const requestPriority = z.enum(["LOW", "NORMAL", "HIGH", "URGENT"]);
 
@@ -56,7 +60,6 @@ const updateServiceRequestSchema = z
     title: z.string().trim().min(3).max(160).optional(),
     description: z.string().trim().min(10).max(5000).optional(),
     caseType: caseType.optional(),
-    status: requestStatus.optional(),
     priority: requestPriority.optional(),
     location: z.string().trim().max(500).optional(),
     address: z.string().trim().min(3).max(500).optional().nullable(),
@@ -101,6 +104,23 @@ const assignmentSchema = z.object({
   assignedToId: z.string().uuid(),
 });
 
+const transitionSchema = z.object({
+  status: requestStatus,
+  reason: z.string().trim().max(5000).optional(),
+});
+
+const noteSchema = z.object({
+  note: z.string().trim().min(1).max(5000),
+});
+
+const resolutionSchema = z.object({
+  reason: z.string().trim().min(1).max(5000),
+});
+
+const reopenSchema = z.object({
+  reason: z.string().trim().min(1).max(5000),
+});
+
 const queueQuerySchema = z.object({
   searchTerm: z.string().trim().max(160).optional(),
   status: requestStatus.optional(),
@@ -119,5 +139,9 @@ export const ServiceRequestValidation = {
   updateServiceRequestSchema,
   createAttachmentSchema,
   assignmentSchema,
+  transitionSchema,
+  noteSchema,
+  resolutionSchema,
+  reopenSchema,
   queueQuerySchema,
 };

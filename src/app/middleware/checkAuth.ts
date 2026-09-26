@@ -11,7 +11,13 @@ import type { Role } from "../../generated/prisma/enums";
 declare global {
   namespace Express {
     interface Request {
-      user?: { userId: string; email: string; name: string; role: Role };
+      user?: {
+        userId: string;
+        email: string;
+        name: string;
+        role: Role;
+        departmentId?: string | null;
+      };
     }
   }
 }
@@ -62,6 +68,7 @@ export const auth = (...requiredRoles: string[]) =>
       email: user.email,
       name: user.name,
       role: user.role,
+      departmentId: user.departmentId,
     };
     next();
   });

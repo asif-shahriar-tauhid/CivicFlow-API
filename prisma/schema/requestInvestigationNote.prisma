@@ -1,0 +1,13 @@
+model RequestInvestigationNote {
+    id        String   @id @default(uuid())
+    requestId String
+    note      String
+    actorId   String
+    createdAt DateTime @default(now())
+
+    request ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    actor   User           @relation("RequestInvestigationNoteActor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+    @@index([requestId, createdAt], name: "idx_request_investigation_request_created")
+    @@map("request_investigation_notes")
+}

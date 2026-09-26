@@ -5,6 +5,7 @@ import { AppError } from "../../utils/AppError";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { serviceRequestServices } from "./serviceRequest.service";
+import { requestStateMachineService } from "./requestStateMachine.service";
 
 const currentUser = (req: Request): RequestUser => {
   if (!req.user) {
@@ -106,65 +107,6 @@ const routeServiceRequest = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const addAttachment = catchAsync(async (req: Request, res: Response) => {
-  if (!req.file) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Evidence file is required.");
-  }
-  const data = await serviceRequestServices.addAttachment(
-    req.params.requestId as string,
-    req.file,
-    req.body?.caption,
-    currentUser(req),
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.CREATED,
-    success: true,
-    message: "Attachment uploaded successfully.",
-    data,
-  });
-});
-
-const listAttachments = catchAsync(async (req: Request, res: Response) => {
-  const data = await serviceRequestServices.listAttachments(
-    req.params.requestId as string,
-    currentUser(req),
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Attachments retrieved successfully.",
-    data,
-  });
-});
-
-const getAttachment = catchAsync(async (req: Request, res: Response) => {
-  const data = await serviceRequestServices.getAttachment(
-    req.params.requestId as string,
-    req.params.attachmentId as string,
-    currentUser(req),
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Attachment retrieved successfully.",
-    data,
-  });
-});
-
-const deleteAttachment = catchAsync(async (req: Request, res: Response) => {
-  const data = await serviceRequestServices.deleteAttachment(
-    req.params.requestId as string,
-    req.params.attachmentId as string,
-    currentUser(req),
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Attachment deleted successfully.",
-    data,
-  });
-});
-
 const assignServiceRequest = catchAsync(async (req: Request, res: Response) => {
   const data = await serviceRequestServices.assignServiceRequest(
     req.params.requestId as string,
@@ -221,6 +163,82 @@ const departmentQueue = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const transitionServiceRequest = catchAsync(
+  async (req: Request, res: Response) => {
+    const data = await requestStateMachineService.transition(
+      req.params.requestId as string,
+      req.body.status,
+      currentUser(req),
+      { reason: req.body.reason },
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Service request status updated successfully.",
+      data,
+    });
+  },
+);
+
+const addInvestigationNote = catchAsync(async (req: Request, res: Response) => {
+  const data = await requestStateMachineService.addInvestigationNote(
+    req.params.requestId as string,
+    req.body.note,
+    currentUser(req),
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Investigation note added successfully.",
+    data,
+  });
+});
+
+const resolveServiceRequest = catchAsync(
+  async (req: Request, res: Response) => {
+    const data = await requestStateMachineService.resolve(
+      req.params.requestId as string,
+      req.body.reason,
+      currentUser(req),
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Service request resolved successfully.",
+      data,
+    });
+  },
+);
+
+const confirmServiceRequest = catchAsync(
+  async (req: Request, res: Response) => {
+    const data = await requestStateMachineService.confirm(
+      req.params.requestId as string,
+      currentUser(req),
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Service request confirmed successfully.",
+      data,
+    });
+  },
+);
+
+const reopenServiceRequest = catchAsync(async (req: Request, res: Response) => {
+  const data = await requestStateMachineService.reopen(
+    req.params.requestId as string,
+    req.body.reason,
+    currentUser(req),
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Service request reopened successfully.",
+    data,
+  });
+});
+
 export const serviceRequestController = {
   createServiceRequest,
   listServiceRequests,
@@ -228,12 +246,13 @@ export const serviceRequestController = {
   updateServiceRequest,
   deleteServiceRequest,
   routeServiceRequest,
-  addAttachment,
-  listAttachments,
-  getAttachment,
-  deleteAttachment,
   assignServiceRequest,
   reassignServiceRequest,
   myQueue,
   departmentQueue,
+  transitionServiceRequest,
+  addInvestigationNote,
+  resolveServiceRequest,
+  confirmServiceRequest,
+  reopenServiceRequest,
 };

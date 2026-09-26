@@ -1,0 +1,15 @@
+model RequestStatusHistory {
+    id        String         @id @default(uuid())
+    requestId String
+    from      RequestStatus?
+    to        RequestStatus
+    reason    String?
+    actorId   String
+    createdAt DateTime       @default(now())
+
+    request ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    actor   User           @relation("RequestStatusHistoryActor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+    @@index([requestId, createdAt], name: "idx_request_status_history_request_created")
+    @@map("request_status_history")
+}
