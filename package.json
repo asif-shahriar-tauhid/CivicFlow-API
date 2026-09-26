@@ -14,7 +14,8 @@
     "lint:check": "biome lint ./src",
     "lint:fix": "biome lint --write ./src",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "sla:process": "tsx src/app/module/sla/sla.job.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",

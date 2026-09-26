@@ -126,6 +126,7 @@ const queueQuerySchema = z.object({
   status: requestStatus.optional(),
   priority: requestPriority.optional(),
   assignedToId: z.string().uuid().optional(),
+  overdue: z.enum(["true", "false"]).optional(),
   page: z.coerce.number().int().min(1).optional(),
   limit: z.coerce.number().int().min(1).max(100).optional(),
   sortBy: z

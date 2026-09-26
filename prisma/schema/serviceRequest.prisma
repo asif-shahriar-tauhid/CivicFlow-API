@@ -1,25 +1,31 @@
 model ServiceRequest {
-    id                String               @id @default(uuid())
-    requestNumber     String               @unique
-    title             String
-    description       String
-    caseType          CaseType             @default(SERVICE_REQUEST)
-    status            RequestStatus        @default(SUBMITTED)
-    priority          RequestPriority      @default(NORMAL)
-    location          String?
-    address           String?
-    ward              String?
-    zone              String?
-    landmark          String?
-    latitude          Float?
-    longitude         Float?
-    routingStatus     RequestRoutingStatus @default(MANUAL_REVIEW)
-    resolutionSummary String?
-    resolvedAt        DateTime?
-    isDeleted         Boolean              @default(false)
-    deletedAt         DateTime?
-    createdAt         DateTime             @default(now())
-    updatedAt         DateTime             @updatedAt
+    id                       String               @id @default(uuid())
+    requestNumber            String               @unique
+    title                    String
+    description              String
+    caseType                 CaseType             @default(SERVICE_REQUEST)
+    status                   RequestStatus        @default(SUBMITTED)
+    priority                 RequestPriority      @default(NORMAL)
+    location                 String?
+    address                  String?
+    ward                     String?
+    zone                     String?
+    landmark                 String?
+    latitude                 Float?
+    longitude                Float?
+    routingStatus            RequestRoutingStatus @default(MANUAL_REVIEW)
+    slaDueAt                 DateTime?
+    slaPausedAt              DateTime?
+    slaPausedDurationSeconds Int                  @default(0)
+    slaBreachedAt            DateTime?
+    slaEscalationState       SlaEscalationState   @default(NONE)
+    slaLastEvaluatedAt       DateTime?
+    resolutionSummary        String?
+    resolvedAt               DateTime?
+    isDeleted                Boolean              @default(false)
+    deletedAt                DateTime?
+    createdAt                DateTime             @default(now())
+    updatedAt                DateTime             @updatedAt
 
     citizenId          String
     citizen            Citizen                    @relation(fields: [citizenId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -37,6 +43,7 @@ model ServiceRequest {
     statusHistory      RequestStatusHistory[]
     investigationNotes RequestInvestigationNote[]
     resolutions        RequestResolution[]
+    slaAudits          RequestSlaAudit[]
 
     @@index([citizenId, status], name: "idx_service_request_citizen_status")
     @@index([categoryId, status], name: "idx_service_request_category_status")
@@ -46,5 +53,7 @@ model ServiceRequest {
     @@index([isDeleted, createdAt], name: "idx_service_request_deleted_created")
     @@index([ward, isDeleted], name: "idx_service_request_ward_deleted")
     @@index([zone, isDeleted], name: "idx_service_request_zone_deleted")
+    @@index([slaDueAt, slaBreachedAt, isDeleted], name: "idx_service_request_sla_due")
+    @@index([slaEscalationState, isDeleted], name: "idx_service_request_sla_escalation")
     @@map("service_requests")
 }

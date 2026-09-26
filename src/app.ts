@@ -9,6 +9,7 @@ import { AuthRoutes } from "./app/module/auth/auth.route";
 import { DepartmentRoutes } from "./app/module/department/department.route";
 import { PaymentRoutes } from "./app/module/payment/payment.route";
 import { ServiceRequestRoutes } from "./app/module/serviceRequest/serviceRequest.route";
+import { SlaRoutes } from "./app/module/sla/sla.route";
 import { UserRoutes } from "./app/module/user/user.route";
 
 const app: Application = express();
@@ -27,6 +28,7 @@ app.use("/api/v1/user", UserRoutes);
 app.use("/api/v1/payment", PaymentRoutes);
 app.use("/api/v1/departments", DepartmentRoutes);
 app.use("/api/v1/requests", ServiceRequestRoutes);
+app.use("/api/v1/sla", SlaRoutes);
 
 app.use(globalErrorHandler);
 app.use(notFound);

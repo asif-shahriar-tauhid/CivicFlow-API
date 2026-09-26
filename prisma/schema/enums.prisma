@@ -48,6 +48,13 @@ enum RequestPriority {
   URGENT
 }
 
+enum SlaEscalationState {
+  NONE
+  BREACHED
+  ACKNOWLEDGED
+  ESCALATED
+}
+
 enum RequestRoutingStatus {
   MANUAL_REVIEW
   ASSIGNED

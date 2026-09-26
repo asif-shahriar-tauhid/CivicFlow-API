@@ -4,6 +4,7 @@ import type { Prisma } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 import type { IRequestUser } from "./serviceRequest.interface";
+import { applyStatusChange } from "../sla/sla.service";
 
 const transitions: Record<RequestStatus, RequestStatus[]> = {
   SUBMITTED: [RequestStatus.TRIAGED, RequestStatus.REJECTED],
@@ -141,6 +142,7 @@ const transition = async (
       where: { id: requestId },
       data: { status: to },
     });
+    await applyStatusChange(tx, requestId, request.status, to, user.userId);
     await tx.requestStatusHistory.create({
       data: {
         requestId,
@@ -189,6 +191,13 @@ const resolve = async (requestId: string, reason: string, user: IRequestUser) =>
         resolvedAt: new Date(),
       },
     });
+    await applyStatusChange(
+      tx,
+      requestId,
+      request.status,
+      RequestStatus.RESOLVED,
+      user.userId,
+    );
     await tx.requestResolution.create({
       data: { requestId, reason: reason.trim(), actorId: user.userId },
     });

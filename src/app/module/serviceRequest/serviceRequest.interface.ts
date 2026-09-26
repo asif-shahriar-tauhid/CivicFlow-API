@@ -51,6 +51,7 @@ export interface IServiceRequestQuery {
   limit?: string;
   sortBy?: string;
   sortOrder?: string;
+  overdue?: string;
 }
 
 export interface IAssignmentPayload {

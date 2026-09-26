@@ -14,6 +14,7 @@ import type {
   IUpdateServiceRequestPayload,
 } from "./serviceRequest.interface";
 import { attachmentSelect } from "../attachment/attachment.service";
+import { slaServices } from "../sla/sla.service";
 
 const requestSelect = {
   id: true,
@@ -31,6 +32,12 @@ const requestSelect = {
   latitude: true,
   longitude: true,
   routingStatus: true,
+  slaDueAt: true,
+  slaPausedAt: true,
+  slaPausedDurationSeconds: true,
+  slaBreachedAt: true,
+  slaEscalationState: true,
+  slaLastEvaluatedAt: true,
   departmentId: true,
   department: { select: { id: true, name: true } },
   resolutionSummary: true,
@@ -340,10 +347,18 @@ const createServiceRequest = async (
   try {
     return await prisma.$transaction(async (tx) => {
       await assertActiveCategory(tx, categoryId);
+      const createdAt = new Date();
+      const slaDueAt = await slaServices.getDueAtForCategory(
+        tx,
+        categoryId,
+        createdAt,
+      );
       const request = await tx.serviceRequest.create({
         data: {
           ...data,
           requestNumber: requestNumber(),
+          createdAt,
+          slaDueAt,
           citizen: { connect: { id: citizenId } },
           category: categoryId ? { connect: { id: categoryId } } : undefined,
           createdBy: { connect: { id: user.userId } },
@@ -449,6 +464,13 @@ const listServiceRequests = async (
   if (query.departmentId) conditions.push({ departmentId: query.departmentId });
   if (query.ward) conditions.push({ ward: query.ward });
   if (query.zone) conditions.push({ zone: query.zone });
+  if (query.overdue === "true") {
+    conditions.push({
+      slaDueAt: { lte: new Date() },
+      slaPausedAt: null,
+      status: { notIn: ["RESOLVED", "CLOSED", "REJECTED"] },
+    });
+  }
 
   const where = { AND: conditions };
   const [data, total] = await Promise.all([
@@ -502,6 +524,13 @@ const getQueue = async (
         { title: { contains: query.searchTerm, mode: "insensitive" } },
         { requestNumber: { contains: query.searchTerm, mode: "insensitive" } },
       ],
+    });
+  }
+  if (query.overdue === "true") {
+    conditions.push({
+      slaDueAt: { lte: new Date() },
+      slaPausedAt: null,
+      status: { notIn: ["RESOLVED", "CLOSED", "REJECTED"] },
     });
   }
   const where = { AND: conditions };
@@ -699,6 +728,14 @@ const updateServiceRequest = async (
       data: updateData,
       select: { id: true },
     });
+    if (payload.categoryId !== undefined) {
+      await slaServices.refreshDueAtForCategory(
+        tx,
+        requestId,
+        payload.categoryId,
+        user.userId,
+      );
+    }
     return routeRequestInTransaction(
       tx,
       requestId,
