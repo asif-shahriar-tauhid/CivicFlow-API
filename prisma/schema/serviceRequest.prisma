@@ -43,6 +43,7 @@ model ServiceRequest {
     statusHistory      RequestStatusHistory[]
     investigationNotes RequestInvestigationNote[]
     resolutions        RequestResolution[]
+    feedback           RequestFeedback?
     slaAudits          RequestSlaAudit[]
     payments           Payment[]
 

@@ -16,6 +16,10 @@ const config = {
     process.env.JWT_REFRESH_SECRET || "development-refresh-secret",
   jwt_access_expires_in: process.env.JWT_ACCESS_EXPIRES_IN || "1d",
   jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
+  request_reopen_window_days: Math.max(
+    Number(process.env.REQUEST_REOPEN_WINDOW_DAYS) || 7,
+    1,
+  ),
   redis_url: process.env.REDIS_URL || "",
   google_client_id: process.env.GOOGLE_CLIENT_ID || "",
   super_admin_name: process.env.SUPER_ADMIN_NAME || "Super Admin",

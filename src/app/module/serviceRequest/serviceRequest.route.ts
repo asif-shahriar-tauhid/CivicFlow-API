@@ -76,7 +76,7 @@ router.post(
 );
 router.post(
   "/:requestId/reopen",
-  auth(...requestRoles),
+  auth(Role.CITIZEN),
   validateRequest(ServiceRequestValidation.reopenSchema),
   serviceRequestController.reopenServiceRequest,
 );

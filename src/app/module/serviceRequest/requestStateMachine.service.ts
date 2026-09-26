@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import { RequestStatus, Role } from "../../../generated/prisma/enums";
 import type { Prisma } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
+import config from "../../config";
 import { AppError } from "../../utils/AppError";
 import type { IRequestUser } from "./serviceRequest.interface";
 import { applyStatusChange } from "../sla/sla.service";
@@ -95,7 +96,7 @@ const assertTransition = (
   }
 };
 
-type TransitionOptions = { reason?: string };
+type TransitionOptions = { reason?: string; focusedLifecycle?: boolean };
 
 const loadRequest = async (
   client: Prisma.TransactionClient,
@@ -109,7 +110,13 @@ const loadRequest = async (
       assignedToId: true,
       departmentId: true,
       isDeleted: true,
+      resolvedAt: true,
       citizen: { select: { userId: true } },
+      statusHistory: {
+        where: { to: RequestStatus.REOPENED },
+        select: { id: true },
+        take: 1,
+      },
     },
   });
   if (!request || request.isDeleted) {
@@ -129,9 +136,10 @@ const transition = async (
 ) => {
   const result = await prisma.$transaction(async (tx) => {
     if (
-      to === RequestStatus.RESOLVED ||
-      to === RequestStatus.CLOSED ||
-      to === RequestStatus.REOPENED
+      !options.focusedLifecycle &&
+      (to === RequestStatus.RESOLVED ||
+        to === RequestStatus.CLOSED ||
+        to === RequestStatus.REOPENED)
     ) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
@@ -140,6 +148,38 @@ const transition = async (
     }
     const request = await loadRequest(tx, requestId);
     assertTransition(request, to, user, options.reason);
+    if (to === RequestStatus.REOPENED) {
+      if (user.role !== Role.CITIZEN || request.citizenUserId !== user.userId) {
+        throw new AppError(
+          httpStatus.FORBIDDEN,
+          "Only the owning citizen can reopen this request.",
+        );
+      }
+      if (!request.resolvedAt) {
+        throw new AppError(
+          httpStatus.CONFLICT,
+          "This request does not have a resolution date.",
+        );
+      }
+      if (request.statusHistory.length > 0) {
+        throw new AppError(
+          httpStatus.CONFLICT,
+          "This request can only be reopened once.",
+        );
+      }
+      const reopenDeadline =
+        request.resolvedAt.getTime() +
+        config.request_reopen_window_days * 24 * 60 * 60 * 1000;
+      if (Date.now() >= reopenDeadline) {
+        throw new AppError(
+          httpStatus.CONFLICT,
+          "The request reopen window has expired.",
+        );
+      }
+      if (!options.reason?.trim()) {
+        throw new AppError(httpStatus.BAD_REQUEST, "A reason is required.");
+      }
+    }
     await tx.serviceRequest.update({
       where: { id: requestId },
       data: { status: to },
@@ -154,7 +194,24 @@ const transition = async (
         actorId: user.userId,
       },
     });
-    return tx.serviceRequest.findUniqueOrThrow({ where: { id: requestId } });
+    return tx.serviceRequest.findUniqueOrThrow({
+      where: { id: requestId },
+      include: {
+        citizen: { select: { userId: true } },
+        department: {
+          select: {
+            users: {
+              where: {
+                role: Role.STAFF,
+                status: "ACTIVE",
+                isDeleted: false,
+              },
+              select: { id: true },
+            },
+          },
+        },
+      },
+    });
   });
   const eventKey =
     to === RequestStatus.AWAITING_CITIZEN
@@ -163,7 +220,7 @@ const transition = async (
         ? NotificationEvent.REQUEST_REOPENED
         : NotificationEvent.REQUEST_STATUS_CHANGED;
   publishNotification({
-    recipientId: result.citizenId,
+    recipientId: result.citizen.userId,
     eventKey,
     eventId: `${requestId}:${to}`,
     title:
@@ -179,6 +236,21 @@ const transition = async (
     metadata: { requestId, status: to },
     sendEmail: to === RequestStatus.AWAITING_CITIZEN,
   });
+  if (to === RequestStatus.REOPENED) {
+    const recipients = new Set(
+      result.department?.users.map((staff) => staff.id),
+    );
+    for (const recipientId of recipients) {
+      publishNotification({
+        recipientId,
+        eventKey: NotificationEvent.REQUEST_REOPENED,
+        eventId: requestId,
+        title: "Service request reopened",
+        message: `Service request ${result.requestNumber} was reopened and needs attention.`,
+        metadata: { requestId, status: to },
+      });
+    }
+  }
   return result;
 };
 
@@ -241,10 +313,13 @@ const resolve = async (
         actorId: user.userId,
       },
     });
-    return tx.serviceRequest.findUniqueOrThrow({ where: { id: requestId } });
+    return tx.serviceRequest.findUniqueOrThrow({
+      where: { id: requestId },
+      include: { citizen: { select: { userId: true } } },
+    });
   });
   publishNotification({
-    recipientId: result.citizenId,
+    recipientId: result.citizen.userId,
     eventKey: NotificationEvent.REQUEST_RESOLVED,
     eventId: requestId,
     title: "Service request resolved",
@@ -258,10 +333,14 @@ const resolve = async (
 const confirm = (requestId: string, user: IRequestUser) =>
   transition(requestId, RequestStatus.CLOSED, user, {
     reason: "Confirmed by citizen.",
+    focusedLifecycle: true,
   });
 
 const reopen = (requestId: string, reason: string, user: IRequestUser) =>
-  transition(requestId, RequestStatus.REOPENED, user, { reason });
+  transition(requestId, RequestStatus.REOPENED, user, {
+    reason,
+    focusedLifecycle: true,
+  });
 
 export const requestStateMachineService = {
   transition,

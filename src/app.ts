@@ -13,6 +13,10 @@ import { SlaRoutes } from "./app/module/sla/sla.route";
 import { UserRoutes } from "./app/module/user/user.route";
 import { NotificationRoutes } from "./app/module/notification/notification.route";
 import { RequestPaymentRoutes } from "./app/module/requestPayment/requestPayment.route";
+import {
+  requestFeedbackReportRoutes,
+  requestFeedbackRoutes,
+} from "./app/module/requestFeedback/requestFeedback.route";
 
 const app: Application = express();
 app.use(cors({ origin: config.frontend_url, credentials: true }));
@@ -30,6 +34,8 @@ app.use("/api/v1/user", UserRoutes);
 app.use("/api/v1/payment", PaymentRoutes);
 app.use("/api/v1/departments", DepartmentRoutes);
 app.use("/api/v1/requests", ServiceRequestRoutes);
+app.use("/api/v1/requests", requestFeedbackRoutes);
+app.use("/api/v1/request-feedback", requestFeedbackReportRoutes);
 app.use("/api/v1/sla", SlaRoutes);
 app.use("/api/v1/notifications", NotificationRoutes);
 app.use("/api/v1/request-payments", RequestPaymentRoutes);
