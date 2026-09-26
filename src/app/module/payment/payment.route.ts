@@ -8,7 +8,7 @@ const router = Router();
 
 router.get("/my-payments", auth(Role.CITIZEN), paymentController.getMyPayments);
 
-router.get("all-payments", auth(Role.ADMIN), paymentController.getAllPayments);
+router.get("/all-payments", auth(Role.ADMIN), paymentController.getAllPayments);
 
 router.get(
   "/:paymentId/invoice",

@@ -8,6 +8,7 @@
     "build": "tsc",
     "vercel-build": "prisma generate",
     "start": "node dist/src/server.js",
+    "seed": "tsx src/app/utils/seed.ts",
     "test": "node --import tsx --test tests/**/*.test.ts",
     "format:check": "biome format ./src",
     "format:fix": "biome format --write ./src",
