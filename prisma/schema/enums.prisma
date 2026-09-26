@@ -49,6 +49,11 @@ enum RequestRoutingStatus {
   ASSIGNED
 }
 
+enum AssignmentAction {
+  ASSIGNED
+  REASSIGNED
+}
+
 enum AppointmentStatus {
   PENDING
   CONFIRMED

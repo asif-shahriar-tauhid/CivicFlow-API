@@ -29,12 +29,16 @@ model ServiceRequest {
     department    Department?           @relation(fields: [departmentId], references: [id], onDelete: SetNull, onUpdate: Cascade)
     createdById   String
     createdBy     User                  @relation(fields: [createdById], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    assignedToId  String?
+    assignedTo    User?                 @relation("ServiceRequestAssignee", fields: [assignedToId], references: [id], onDelete: SetNull, onUpdate: Cascade)
     routingAudits RequestRoutingAudit[]
+    assignments   RequestAssignment[]
     attachments   RequestAttachment[]
 
     @@index([citizenId, status], name: "idx_service_request_citizen_status")
     @@index([categoryId, status], name: "idx_service_request_category_status")
     @@index([departmentId, status], name: "idx_service_request_department_status")
+    @@index([assignedToId, status, isDeleted], name: "idx_service_request_assignee_status_deleted")
     @@index([routingStatus, isDeleted], name: "idx_service_request_routing_status_deleted")
     @@index([isDeleted, createdAt], name: "idx_service_request_deleted_created")
     @@index([ward, isDeleted], name: "idx_service_request_ward_deleted")

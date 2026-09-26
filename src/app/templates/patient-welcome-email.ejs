@@ -1,207 +1,33 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to <%= APP_NAME %></title>
 </head>
-
-<body style="margin:0; padding:0; background:#f4f7f6; font-family:Arial, Helvetica, sans-serif; color:#1f2937;">
-
-  <table width="100%" cellpadding="0" cellspacing="0" border="0"
-    style="background:#f4f7f6; padding:40px 16px;">
-
-```
-<tr>
-  <td align="center">
-
-    <table width="100%" cellpadding="0" cellspacing="0" border="0"
-      style="max-width:560px; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,0.06);">
-
-      <!-- Header -->
-      <tr>
-        <td style="padding:36px 40px; text-align:center; background:#111827;">
-
-          <div style="font-size:26px; font-weight:700; color:#ffffff;">
-            <%= APP_NAME %>
-          </div>
-
-          <div style="margin-top:8px; font-size:13px; color:#9ca3af;">
-            Your healthcare journey starts here
-          </div>
-
-        </td>
-      </tr>
-
-      <!-- Content -->
-      <tr>
-        <td style="padding:40px;">
-
-          <div style="
-            width:64px;
-            height:64px;
-            line-height:64px;
-            margin:0 auto 24px;
-            background:#dcfce7;
-            border-radius:50%;
-            text-align:center;
-            font-size:30px;
-            color:#16a34a;
-          ">
-            ✓
-          </div>
-
-          <h1 style="
-            margin:0 0 16px;
-            text-align:center;
-            font-size:28px;
-            line-height:1.3;
-            color:#111827;
-          ">
-            Welcome, <%= USER_NAME %>!
-          </h1>
-
-          <p style="
-            margin:0 0 20px;
-            font-size:15px;
-            line-height:1.7;
-            color:#4b5563;
-          ">
-            We're delighted to welcome you to <strong><%= APP_NAME %></strong>.
-            Your patient account has been successfully created and you're
-            now ready to get started.
-          </p>
-
-          <p style="
-            margin:0 0 28px;
-            font-size:15px;
-            line-height:1.7;
-            color:#4b5563;
-          ">
-            With your account, you can conveniently manage your healthcare
-            needs, keep track of your information, and access the services
-            available through <%= APP_NAME %>.
-          </p>
-
-          <!-- Welcome Box -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td style="
-                padding:22px;
-                background:#f0fdf4;
-                border:1px solid #dcfce7;
-                border-radius:12px;
-              ">
-
-                <p style="
-                  margin:0 0 8px;
-                  font-size:15px;
-                  font-weight:700;
-                  color:#166534;
-                ">
-                  Your account is ready!
-                </p>
-
-                <p style="
-                  margin:0;
-                  font-size:14px;
-                  line-height:1.7;
-                  color:#4b5563;
-                ">
-                  You can now sign in and begin using your
-                  <%= APP_NAME %> patient account.
-                </p>
-
-              </td>
-            </tr>
+<body style="margin:0;background:#eef3f1;color:#18332d;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="padding:32px 16px;background:#eef3f1;">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:560px;background:#ffffff;border:1px solid #d5e2dd;">
+        <tr><td style="padding:28px 36px;background:#145c4a;color:#ffffff;">
+          <div style="font-size:24px;font-weight:700;"><%= APP_NAME %></div>
+          <div style="margin-top:6px;font-size:13px;color:#d8eee7;">Your civic services, in one place</div>
+        </td></tr>
+        <tr><td style="padding:36px;">
+          <p style="margin:0 0 12px;font-size:14px;color:#58716a;">ACCOUNT READY</p>
+          <h1 style="margin:0 0 16px;font-size:26px;color:#18332d;">Welcome, <%= USER_NAME %></h1>
+          <p style="margin:0 0 18px;font-size:15px;line-height:1.7;color:#49625b;">Your CivicFlow account is ready. You can now report civic issues, submit service requests, follow updates, and keep your community requests organized.</p>
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:24px 0;background:#e8f4ef;border:1px solid #c7e3d8;">
+            <tr><td style="padding:20px;">
+              <div style="font-weight:700;color:#145c4a;">What you can do</div>
+              <div style="margin-top:8px;font-size:14px;line-height:1.7;color:#49625b;">Create requests, attach evidence, view department updates, and track progress through resolution.</div>
+            </td></tr>
           </table>
-
-          <!-- CTA -->
-          <!-- <table width="100%" cellpadding="0" cellspacing="0" border="0"
-            style="margin-top:30px;">
-
-            <tr>
-              <td align="center">
-
-                <a href="<%= LOGIN_URL %>"
-                  style="
-                    display:inline-block;
-                    padding:14px 30px;
-                    background:#16a34a;
-                    color:#ffffff;
-                    text-decoration:none;
-                    font-size:14px;
-                    font-weight:600;
-                    border-radius:8px;
-                  ">
-                  Access Your Account
-                </a>
-
-              </td>
-            </tr>
-
-          </table> -->
-
-          <p style="
-            margin:30px 0 0;
-            text-align:center;
-            font-size:13px;
-            line-height:1.6;
-            color:#9ca3af;
-          ">
-            If you have any questions or need assistance, our support team
-            is here to help.
-          </p>
-
-          <p style="
-            margin:24px 0 0;
-            text-align:center;
-            font-size:15px;
-            font-weight:600;
-            color:#374151;
-          ">
-            Thank you for choosing <%= APP_NAME %>.
-          </p>
-
-        </td>
-      </tr>
-
-      <!-- Footer -->
-      <tr>
-        <td style="
-          padding:24px 40px;
-          background:#f9fafb;
-          text-align:center;
-          border-top:1px solid #f3f4f6;
-        ">
-
-          <p style="
-            margin:0 0 8px;
-            font-size:12px;
-            color:#9ca3af;
-          ">
-            This is an automated message. Please do not reply to this email.
-          </p>
-
-          <p style="
-            margin:0;
-            font-size:12px;
-            color:#9ca3af;
-          ">
-            © <%= CURRENT_YEAR %> <%= APP_NAME %>. All rights reserved.
-          </p>
-
-        </td>
-      </tr>
-
-    </table>
-
-  </td>
-</tr>
-```
-
+          <p style="margin:0;font-size:13px;line-height:1.6;color:#70857f;">Sign in at <a href="<%= LOGIN_URL %>" style="color:#145c4a;font-weight:700;"><%= LOGIN_URL %></a> to get started.</p>
+        </td></tr>
+        <tr><td style="padding:20px 36px;background:#f6f9f8;font-size:12px;color:#70857f;">&copy; <%= CURRENT_YEAR %> <%= APP_NAME %>. Civic services made simpler.</td></tr>
+      </table>
+    </td></tr>
   </table>
-
 </body>
 </html>

@@ -1,231 +1,32 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verify Your Email</title>
+  <title>Verify your CivicFlow account</title>
 </head>
-
-<body style="margin:0; padding:0; background:#f4f7f6; font-family:Arial, Helvetica, sans-serif; color:#1f2937;">
-
-  <table width="100%" cellpadding="0" cellspacing="0" border="0"
-    style="background:#f4f7f6; padding:40px 16px;">
-
-<tr>
-  <td align="center">
-
-    <table width="100%" cellpadding="0" cellspacing="0" border="0"
-      style="max-width:560px; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,0.06);">
-
-      <!-- Header -->
-      <tr>
-        <td style="padding:32px 40px; text-align:center; background:#111827;">
-
-          <div style="font-size:26px; font-weight:700; color:#ffffff;">
-            <%= APP_NAME %>
+<body style="margin:0;background:#eef3f1;color:#18332d;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="padding:32px 16px;background:#eef3f1;">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:560px;background:#ffffff;border:1px solid #d5e2dd;">
+        <tr><td style="padding:28px 36px;background:#145c4a;color:#ffffff;">
+          <div style="font-size:24px;font-weight:700;"><%= APP_NAME %></div>
+          <div style="margin-top:6px;font-size:13px;color:#d8eee7;">Your civic services, in one place</div>
+        </td></tr>
+        <tr><td style="padding:36px;">
+          <p style="margin:0 0 12px;font-size:14px;color:#58716a;">ACCOUNT VERIFICATION</p>
+          <h1 style="margin:0 0 16px;font-size:26px;color:#18332d;">Confirm your email address</h1>
+          <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#49625b;">Hello <strong><%= USER_NAME %></strong>, use the verification code below to activate your CivicFlow account and access municipal services.</p>
+          <div style="padding:22px;text-align:center;background:#e8f4ef;border:1px solid #c7e3d8;">
+            <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#58716a;">Verification code</div>
+            <div style="margin-top:10px;font-size:34px;font-weight:700;letter-spacing:8px;color:#145c4a;"><%= otpValue %></div>
+            <div style="margin-top:10px;font-size:12px;color:#58716a;">Expires in <%= EXPIRY_MINUTES %> minutes</div>
           </div>
-
-          <div style="margin-top:8px; font-size:13px; color:#9ca3af;">
-            Welcome to <%= APP_NAME %>
-          </div>
-
-        </td>
-      </tr>
-
-      <!-- Content -->
-      <tr>
-        <td style="padding:40px;">
-
-          <!-- Verification Icon -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td align="center">
-
-                <div style="
-                  width:64px;
-                  height:64px;
-                  line-height:64px;
-                  margin:0 auto 24px;
-                  background:#dcfce7;
-                  border-radius:50%;
-                  font-size:28px;
-                  color:#16a34a;
-                ">
-                  ✓
-                </div>
-
-              </td>
-            </tr>
-          </table>
-
-          <h1 style="
-            margin:0 0 16px;
-            text-align:center;
-            font-size:26px;
-            line-height:1.3;
-            color:#111827;
-          ">
-            Verify Your Email
-          </h1>
-
-          <p style="
-            margin:0 0 18px;
-            font-size:15px;
-            line-height:1.7;
-            color:#4b5563;
-          ">
-            Hi <strong><%= USER_NAME %></strong>,
-          </p>
-
-          <p style="
-            margin:0 0 24px;
-            font-size:15px;
-            line-height:1.7;
-            color:#4b5563;
-          ">
-            Welcome to <strong><%= APP_NAME %></strong>! We're excited
-            to have you with us.
-          </p>
-
-          <p style="
-            margin:0 0 28px;
-            font-size:15px;
-            line-height:1.7;
-            color:#4b5563;
-          ">
-            To complete your registration and verify your email address,
-            please use the verification code below:
-          </p>
-
-          <!-- OTP -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td align="center" style="
-                padding:28px;
-                background:#f0fdf4;
-                border:1px solid #dcfce7;
-                border-radius:12px;
-              ">
-
-                <div style="
-                  font-size:12px;
-                  font-weight:600;
-                  letter-spacing:1.5px;
-                  text-transform:uppercase;
-                  color:#6b7280;
-                  margin-bottom:12px;
-                ">
-                  Verification Code
-                </div>
-
-                <div style="
-                  font-size:36px;
-                  font-weight:700;
-                  letter-spacing:10px;
-                  color:#16a34a;
-                ">
-                  <%= otpValue %>
-                </div>
-
-                <div style="
-                  margin-top:14px;
-                  font-size:12px;
-                  color:#6b7280;
-                ">
-                  This code will expire in
-                  <strong><%= EXPIRY_MINUTES %> minutes</strong>.
-                </div>
-
-              </td>
-            </tr>
-          </table>
-
-          <p style="
-            margin:28px 0 12px;
-            font-size:14px;
-            line-height:1.7;
-            color:#4b5563;
-          ">
-            Enter this code on the registration page to verify your
-            email address and complete your account setup.
-          </p>
-
-          <!-- Security Note -->
-          <table width="100%" cellpadding="0" cellspacing="0" border="0"
-            style="margin-top:28px;">
-
-            <tr>
-              <td style="
-                padding:16px;
-                background:#f9fafb;
-                border-radius:10px;
-              ">
-
-                <p style="
-                  margin:0;
-                  font-size:12px;
-                  line-height:1.6;
-                  color:#6b7280;
-                ">
-                  <strong style="color:#374151;">
-                    Security reminder:
-                  </strong>
-                  Never share this verification code with anyone.
-                  <%= APP_NAME %> will never ask you for your OTP.
-                </p>
-
-              </td>
-            </tr>
-
-          </table>
-
-          <p style="
-            margin:24px 0 0;
-            font-size:13px;
-            line-height:1.6;
-            color:#9ca3af;
-          ">
-            If you didn't create an account with <%= APP_NAME %>,
-            you can safely ignore this email.
-          </p>
-
-        </td>
-      </tr>
-
-      <!-- Footer -->
-      <tr>
-        <td style="
-          padding:24px 40px;
-          background:#f9fafb;
-          text-align:center;
-          border-top:1px solid #f3f4f6;
-        ">
-
-          <p style="
-            margin:0 0 8px;
-            font-size:12px;
-            color:#9ca3af;
-          ">
-            This is an automated message. Please do not reply to this email.
-          </p>
-
-          <p style="
-            margin:0;
-            font-size:12px;
-            color:#9ca3af;
-          ">
-            © <%= CURRENT_YEAR %> <%= APP_NAME %>. All rights reserved.
-          </p>
-
-        </td>
-      </tr>
-
-    </table>
-
-  </td>
-</tr>
+          <p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:#70857f;">If you did not create a CivicFlow account, you can ignore this email. Never share this code with anyone.</p>
+        </td></tr>
+        <tr><td style="padding:20px 36px;background:#f6f9f8;font-size:12px;color:#70857f;">&copy; <%= CURRENT_YEAR %> <%= APP_NAME %>. Civic services made simpler.</td></tr>
+      </table>
+    </td></tr>
   </table>
-
 </body>
 </html>
