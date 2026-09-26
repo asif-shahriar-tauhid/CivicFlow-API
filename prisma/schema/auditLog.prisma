@@ -1,0 +1,22 @@
+model AuditLog {
+    id        String   @id @default(uuid())
+    actorId   String?
+    actorEmail String?
+    action    String
+    entity    String
+    entityId  String
+    before    Json?
+    after     Json?
+    ipAddress String?
+    route     String?
+    userAgent String?
+    timestamp DateTime @default(now())
+
+    actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+    @@index([actorId, timestamp], name: "idx_audit_log_actor_timestamp")
+    @@index([entity, entityId, timestamp], name: "idx_audit_log_entity_timestamp")
+    @@index([action, timestamp], name: "idx_audit_log_action_timestamp")
+    @@index([timestamp], name: "idx_audit_log_timestamp")
+    @@map("audit_logs")
+}

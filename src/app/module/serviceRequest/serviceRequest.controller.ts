@@ -6,6 +6,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { serviceRequestServices } from "./serviceRequest.service";
 import { requestStateMachineService } from "./requestStateMachine.service";
+import { emitAuditLog, actorFromReq } from "../auditLog/auditLog.service";
 
 const currentUser = (req: Request): RequestUser => {
   if (!req.user) {
@@ -33,6 +34,13 @@ const createServiceRequest = catchAsync(async (req: Request, res: Response) => {
     currentUser(req),
     extractFiles(req),
   );
+  emitAuditLog({
+    ...actorFromReq(req),
+    action: "REQUEST_CREATED",
+    entity: "ServiceRequest",
+    entityId: data.id,
+    after: data,
+  });
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -73,6 +81,14 @@ const updateServiceRequest = catchAsync(async (req: Request, res: Response) => {
     req.body,
     currentUser(req),
   );
+  emitAuditLog({
+    ...actorFromReq(req),
+    action: "REQUEST_UPDATED",
+    entity: "ServiceRequest",
+    entityId: req.params.requestId as string,
+    before: { updatedFields: Object.keys(req.body) },
+    after: data,
+  });
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -86,6 +102,13 @@ const deleteServiceRequest = catchAsync(async (req: Request, res: Response) => {
     req.params.requestId as string,
     currentUser(req),
   );
+  emitAuditLog({
+    ...actorFromReq(req),
+    action: "REQUEST_SOFT_DELETED",
+    entity: "ServiceRequest",
+    entityId: req.params.requestId as string,
+    after: { isDeleted: true },
+  });
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -99,6 +122,13 @@ const routeServiceRequest = catchAsync(async (req: Request, res: Response) => {
     req.params.requestId as string,
     currentUser(req),
   );
+  emitAuditLog({
+    ...actorFromReq(req),
+    action: "REQUEST_ROUTED",
+    entity: "ServiceRequest",
+    entityId: req.params.requestId as string,
+    after: { departmentId: data.departmentId, routingStatus: data.routingStatus },
+  });
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -113,6 +143,13 @@ const assignServiceRequest = catchAsync(async (req: Request, res: Response) => {
     req.body,
     currentUser(req),
   );
+  emitAuditLog({
+    ...actorFromReq(req),
+    action: "REQUEST_ASSIGNED",
+    entity: "ServiceRequest",
+    entityId: req.params.requestId as string,
+    after: { assignedToId: req.body.assignedToId },
+  });
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -128,6 +165,13 @@ const reassignServiceRequest = catchAsync(
       req.body,
       currentUser(req),
     );
+    emitAuditLog({
+      ...actorFromReq(req),
+      action: "REQUEST_REASSIGNED",
+      entity: "ServiceRequest",
+      entityId: req.params.requestId as string,
+      after: { assignedToId: req.body.assignedToId },
+    });
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -171,6 +215,13 @@ const transitionServiceRequest = catchAsync(
       currentUser(req),
       { reason: req.body.reason },
     );
+    emitAuditLog({
+      ...actorFromReq(req),
+      action: "STATUS_TRANSITION",
+      entity: "ServiceRequest",
+      entityId: req.params.requestId as string,
+      after: { status: req.body.status, reason: req.body.reason },
+    });
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -201,6 +252,13 @@ const resolveServiceRequest = catchAsync(
       req.body.reason,
       currentUser(req),
     );
+    emitAuditLog({
+      ...actorFromReq(req),
+      action: "REQUEST_RESOLVED",
+      entity: "ServiceRequest",
+      entityId: req.params.requestId as string,
+      after: { status: "RESOLVED", reason: req.body.reason },
+    });
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -216,6 +274,13 @@ const confirmServiceRequest = catchAsync(
       req.params.requestId as string,
       currentUser(req),
     );
+    emitAuditLog({
+      ...actorFromReq(req),
+      action: "REQUEST_CONFIRMED",
+      entity: "ServiceRequest",
+      entityId: req.params.requestId as string,
+      after: { status: "CLOSED" },
+    });
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -231,6 +296,13 @@ const reopenServiceRequest = catchAsync(async (req: Request, res: Response) => {
     req.body.reason,
     currentUser(req),
   );
+  emitAuditLog({
+    ...actorFromReq(req),
+    action: "REQUEST_REOPENED",
+    entity: "ServiceRequest",
+    entityId: req.params.requestId as string,
+    after: { status: "REOPENED", reason: req.body.reason },
+  });
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

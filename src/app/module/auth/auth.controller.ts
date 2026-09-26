@@ -5,6 +5,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import { setAuthCookies } from "../../utils/setAuthCookies";
 import type { IRequestUser } from "./auth.interface";
 import { AuthService } from "./auth.service";
+import { emitAuditLog } from "../auditLog/auditLog.service";
 
 const registerUser = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.registerUser(req.body);
@@ -19,6 +20,21 @@ const registerUser = catchAsync(async (req: Request, res: Response) => {
 const verifyEmail = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.verifyEmail(req.body);
   setAuthCookies(res, result.accessToken, result.refreshToken);
+  emitAuditLog({
+    actorId: result.user.id,
+    actorEmail: result.user.email,
+    req,
+    action: "USER_REGISTERED",
+    entity: "User",
+    entityId: result.user.id,
+    after: {
+      id: result.user.id,
+      name: result.user.name,
+      email: result.user.email,
+      role: result.user.role,
+      status: result.user.status,
+    },
+  });
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -98,6 +114,14 @@ const forgotPassword = catchAsync(async (req: Request, res: Response) => {
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
   await AuthService.resetPassword(payload);
+
+  emitAuditLog({
+    action: "USER_PASSWORD_RESET",
+    entity: "User",
+    entityId: payload.email,
+    req,
+    after: { email: payload.email },
+  });
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

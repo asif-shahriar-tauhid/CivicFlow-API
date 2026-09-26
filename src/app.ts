@@ -17,6 +17,8 @@ import {
   requestFeedbackReportRoutes,
   requestFeedbackRoutes,
 } from "./app/module/requestFeedback/requestFeedback.route";
+import { AuditLogRoutes } from "./app/module/auditLog/auditLog.route";
+import { DashboardRoutes } from "./app/module/dashboard/dashboard.route";
 
 const app: Application = express();
 app.use(cors({ origin: config.frontend_url, credentials: true }));
@@ -39,6 +41,8 @@ app.use("/api/v1/request-feedback", requestFeedbackReportRoutes);
 app.use("/api/v1/sla", SlaRoutes);
 app.use("/api/v1/notifications", NotificationRoutes);
 app.use("/api/v1/request-payments", RequestPaymentRoutes);
+app.use("/api/v1/audit-logs", AuditLogRoutes);
+app.use("/api/v1/dashboard", DashboardRoutes);
 
 app.use(globalErrorHandler);
 app.use(notFound);

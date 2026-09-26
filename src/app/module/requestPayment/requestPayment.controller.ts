@@ -5,6 +5,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import type { CallbackResult } from "./requestPayment.interface";
 import { requestPaymentServices } from "./requestPayment.service";
+import { emitAuditLog, actorFromReq } from "../auditLog/auditLog.service";
 
 const currentUser = (req: Request) => {
   if (!req.user)
@@ -24,6 +25,19 @@ const initiate = catchAsync(async (req: Request, res: Response) => {
     req.params.requestId as string,
     currentUser(req),
   );
+  emitAuditLog({
+    ...actorFromReq(req),
+    action: "PAYMENT_INITIATED",
+    entity: "Payment",
+    entityId: data.id,
+    after: {
+      status: data.status,
+      amount: data.amount,
+      currency: data.currency,
+      merchantInvoiceNumber: data.merchantInvoiceNumber,
+      serviceRequestId: req.params.requestId,
+    },
+  });
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -56,6 +70,20 @@ const callback = catchAsync(async (req: Request, res: Response) => {
     paymentId,
     callbackResult(req.params.result as string),
   );
+  emitAuditLog({
+    actorId: req.user?.userId ?? null,
+    actorEmail: req.user?.email ?? null,
+    req,
+    action: "PAYMENT_RECONCILED",
+    entity: "Payment",
+    entityId: data.id,
+    after: {
+      status: data.status,
+      amount: data.amount,
+      currency: data.currency,
+      merchantInvoiceNumber: data.merchantInvoiceNumber,
+    },
+  });
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

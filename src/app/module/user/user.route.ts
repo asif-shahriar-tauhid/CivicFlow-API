@@ -13,4 +13,13 @@ router.patch(
   UserController.uploadProfileImage,
 );
 
+router.get("/", auth(Role.ADMIN), UserController.getAllUsers);
+router.get(
+  "/:userId",
+  auth(Role.ADMIN, Role.STAFF, Role.CITIZEN),
+  UserController.getUserById,
+);
+router.patch("/:userId", auth(Role.ADMIN), UserController.updateUser);
+router.delete("/:userId", auth(Role.ADMIN), UserController.softDeleteUser);
+
 export const UserRoutes = router;

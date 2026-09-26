@@ -31,6 +31,7 @@ model User {
   resolutions         RequestResolution[]        @relation("RequestResolutionActor")
   slaAudits           RequestSlaAudit[]          @relation("RequestSlaAuditActor")
   notifications       Notification[]
+  auditLogs            AuditLog[]
 
   @@index([departmentId, role, status], name: "idx_user_department_role_status")
   @@map("users")
