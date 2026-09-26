@@ -124,7 +124,7 @@ const verifyEmail = async ({ email, otp }: IVerifyEmailPayload) => {
       name: userPayload.name,
       email: userPayload.email,
       password: userPayload.password,
-      role: Role.USER,
+      role: Role.CITIZEN,
       status: UserStatus.ACTIVE,
       emailVerified: true,
       citizen: {
@@ -333,7 +333,7 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
   const ifPatientExistsWithGoogleAuth = await prisma.user.findUnique({
     where: {
       email: googleIdTokenPayload.email,
-      role: Role.USER,
+      role: Role.CITIZEN,
       googleId: googleIdTokenPayload.sub,
     },
   });
@@ -344,7 +344,7 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
     const ifPatientExistsWithCredential = await prisma.user.findUnique({
       where: {
         email: googleIdTokenPayload.email,
-        role: Role.USER,
+        role: Role.CITIZEN,
         authProvider: AuthProvider.CREDENTIAL,
       },
     });
@@ -381,11 +381,11 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
         data: {
           name: googleIdTokenPayload.name,
           email: googleIdTokenPayload.email,
-          role: Role.USER,
+          role: Role.CITIZEN,
           googleId: googleIdTokenPayload.sub,
           authProvider: AuthProvider.GOOGLE,
           emailVerified: true,
-          patient: {
+          citizen: {
             create: {
               name: googleIdTokenPayload.name,
               email: googleIdTokenPayload.email,

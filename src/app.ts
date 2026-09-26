@@ -6,6 +6,7 @@ import config from "./app/config";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import { notFound } from "./app/middleware/notFound";
 import { AuthRoutes } from "./app/module/auth/auth.route";
+import { DepartmentRoutes } from "./app/module/department/department.route";
 import { PaymentRoutes } from "./app/module/payment/payment.route";
 import { ServiceRequestRoutes } from "./app/module/serviceRequest/serviceRequest.route";
 import { UserRoutes } from "./app/module/user/user.route";
@@ -24,6 +25,7 @@ app.get("/", (_req, res) =>
 app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/user", UserRoutes);
 app.use("/api/v1/payment", PaymentRoutes);
+app.use("/api/v1/departments", DepartmentRoutes);
 app.use("/api/v1/requests", ServiceRequestRoutes);
 
 app.use(globalErrorHandler);

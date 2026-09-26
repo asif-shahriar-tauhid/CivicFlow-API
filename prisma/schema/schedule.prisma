@@ -1,26 +1,26 @@
 model Schedule {
-    id String @id @default(uuid())
+  id String @id @default(uuid())
 
-    startDateTime DateTime
-    endDateTime   DateTime
+  startDateTime DateTime
+  endDateTime   DateTime
 
-    totalSlots     Int
-    availableSlots Int
-    meetingLink    String
+  totalSlots     Int
+  availableSlots Int
+  meetingLink    String
 
-    status ScheduleStatus @default(DRAFT)
+  status ScheduleStatus @default(DRAFT)
 
-    isDeleted Boolean   @default(false)
-    deletedAt DateTime?
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    technicianId String
-    technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  technicianId String
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-    appointments Appointment[]
+  appointments Appointment[]
 
-    @@unique([technicianId, startDateTime, endDateTime], name: "unique_schedule")
-    @@map("schedules")
+  @@unique([technicianId, startDateTime, endDateTime], name: "unique_schedule")
+  @@map("schedules")
 }

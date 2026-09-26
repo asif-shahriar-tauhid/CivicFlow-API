@@ -1,0 +1,23 @@
+model RequestAttachment {
+    id           String         @id @default(uuid())
+    requestId    String
+    request      ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    url          String
+    publicId     String
+    fileName     String
+    mimeType     String
+    fileSize     Int
+    format       String?
+    resourceType String         @default("image")
+    caption      String?
+    uploaderId   String
+    uploader     User           @relation(fields: [uploaderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    isDeleted    Boolean        @default(false)
+    deletedAt    DateTime?
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+
+    @@index([requestId, isDeleted], name: "idx_request_attachment_request_deleted")
+    @@index([uploaderId, isDeleted], name: "idx_request_attachment_uploader_deleted")
+    @@map("request_attachments")
+}

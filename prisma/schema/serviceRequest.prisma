@@ -1,44 +1,43 @@
-model RequestCategory {
-    id          String   @id @default(uuid())
-    name        String   @unique
-    description String?
-    isActive    Boolean  @default(true)
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-
-    serviceRequests ServiceRequest[]
-
-    @@index([isActive], name: "idx_request_category_active")
-    @@map("request_categories")
-}
-
 model ServiceRequest {
-    id                String          @id @default(uuid())
-    requestNumber     String          @unique
+    id                String               @id @default(uuid())
+    requestNumber     String               @unique
     title             String
     description       String
-    caseType          CaseType        @default(SERVICE_REQUEST)
-    status            RequestStatus   @default(SUBMITTED)
-    priority          RequestPriority @default(NORMAL)
+    caseType          CaseType             @default(SERVICE_REQUEST)
+    status            RequestStatus        @default(SUBMITTED)
+    priority          RequestPriority      @default(NORMAL)
     location          String?
-    department        String?
+    address           String?
+    ward              String?
+    zone              String?
+    landmark          String?
+    latitude          Float?
+    longitude         Float?
+    routingStatus     RequestRoutingStatus @default(MANUAL_REVIEW)
     resolutionSummary String?
     resolvedAt        DateTime?
-    isDeleted         Boolean         @default(false)
+    isDeleted         Boolean              @default(false)
     deletedAt         DateTime?
-    createdAt         DateTime        @default(now())
-    updatedAt         DateTime        @updatedAt
+    createdAt         DateTime             @default(now())
+    updatedAt         DateTime             @updatedAt
 
-    citizenId   String
-    citizen     Citizen          @relation(fields: [citizenId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    categoryId  String?
-    category    RequestCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-    createdById String
-    createdBy   User             @relation(fields: [createdById], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    citizenId     String
+    citizen       Citizen               @relation(fields: [citizenId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    categoryId    String?
+    category      RequestCategory?      @relation(fields: [categoryId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+    departmentId  String?
+    department    Department?           @relation(fields: [departmentId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+    createdById   String
+    createdBy     User                  @relation(fields: [createdById], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    routingAudits RequestRoutingAudit[]
+    attachments   RequestAttachment[]
 
     @@index([citizenId, status], name: "idx_service_request_citizen_status")
     @@index([categoryId, status], name: "idx_service_request_category_status")
-    @@index([department, status], name: "idx_service_request_department_status")
+    @@index([departmentId, status], name: "idx_service_request_department_status")
+    @@index([routingStatus, isDeleted], name: "idx_service_request_routing_status_deleted")
     @@index([isDeleted, createdAt], name: "idx_service_request_deleted_created")
+    @@index([ward, isDeleted], name: "idx_service_request_ward_deleted")
+    @@index([zone, isDeleted], name: "idx_service_request_zone_deleted")
     @@map("service_requests")
 }

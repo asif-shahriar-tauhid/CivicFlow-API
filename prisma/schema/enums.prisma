@@ -1,64 +1,69 @@
 enum Role {
-    CITIZEN
-    ADMIN
-    STAFF
+  CITIZEN
+  ADMIN
+  STAFF
 }
 
 enum UserStatus {
-    ACTIVE
-    BLOCKED
-    DELETED
+  ACTIVE
+  BLOCKED
+  DELETED
 }
 
 enum AuthProvider {
-    CREDENTIAL
-    GOOGLE
+  CREDENTIAL
+  GOOGLE
 }
 
 enum PaymentStatus {
-    UNPAID
-    PENDING
-    COMPLETED
-    FAILED
-    REFUNDED
+  UNPAID
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
 }
 
 enum CaseType {
-    COMPLAINT
-    SERVICE_REQUEST
+  COMPLAINT
+  SERVICE_REQUEST
 }
 
 enum RequestStatus {
-    SUBMITTED
-    IN_REVIEW
-    IN_PROGRESS
-    RESOLVED
-    CLOSED
-    REJECTED
+  SUBMITTED
+  IN_REVIEW
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+  REJECTED
 }
 
 enum RequestPriority {
-    LOW
-    NORMAL
-    HIGH
-    URGENT
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum RequestRoutingStatus {
+  MANUAL_REVIEW
+  ASSIGNED
 }
 
 enum AppointmentStatus {
-    PENDING
-    CONFIRMED
-    CANCELLED
-    ONGOING
-    COMPLETED
+  PENDING
+  CONFIRMED
+  CANCELLED
+  ONGOING
+  COMPLETED
 }
 
 enum TechnicianVerificationStatus {
-    PENDING
-    APPROVED
-    REJECTED
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum ScheduleStatus {
-    DRAFT
-    PUBLISHED
+  DRAFT
+  PUBLISHED
 }

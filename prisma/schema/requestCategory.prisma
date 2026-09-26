@@ -1,0 +1,14 @@
+model RequestCategory {
+    id          String   @id @default(uuid())
+    name        String   @unique
+    description String?
+    isActive    Boolean  @default(true)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    serviceRequests ServiceRequest[]
+    routingRules    CategoryRoutingRule[]
+
+    @@index([isActive], name: "idx_request_category_active")
+    @@map("request_categories")
+}

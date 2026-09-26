@@ -1,0 +1,21 @@
+model RequestRoutingAudit {
+    id               String               @id @default(uuid())
+    requestId        String
+    fromDepartmentId String?
+    toDepartmentId   String?
+    categoryId       String?
+    location         String?
+    routingStatus    RequestRoutingStatus
+    reason           String
+    changedById      String?
+    createdAt        DateTime             @default(now())
+
+    request        ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    fromDepartment Department?    @relation("RoutingAuditFromDepartment", fields: [fromDepartmentId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+    toDepartment   Department?    @relation("RoutingAuditToDepartment", fields: [toDepartmentId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+    changedBy      User?          @relation(fields: [changedById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+    @@index([requestId, createdAt], name: "idx_routing_audit_request_created")
+    @@index([toDepartmentId, createdAt], name: "idx_routing_audit_department_created")
+    @@map("request_routing_audits")
+}
