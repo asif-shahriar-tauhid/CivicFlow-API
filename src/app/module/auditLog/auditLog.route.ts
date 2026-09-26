@@ -8,10 +8,10 @@ import { auditLogQuerySchema } from "./auditLog.validation";
 const router = Router();
 
 router.get(
-  "/",
-  auth(Role.ADMIN),
-  validateRequest(auditLogQuerySchema, "query"),
-  auditLogController.listAuditLogs,
+	"/",
+	auth(Role.ADMIN),
+	validateRequest(auditLogQuerySchema, "query"),
+	auditLogController.listAuditLogs,
 );
 
 export const AuditLogRoutes = router;

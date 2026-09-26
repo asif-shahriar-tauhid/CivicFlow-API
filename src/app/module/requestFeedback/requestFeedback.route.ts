@@ -7,23 +7,23 @@ import { RequestFeedbackValidation } from "./requestFeedback.validation";
 
 const requestFeedbackRoutes = Router();
 requestFeedbackRoutes.post(
-  "/:requestId/feedback",
-  auth(Role.CITIZEN),
-  validateRequest(RequestFeedbackValidation.createFeedbackSchema),
-  requestFeedbackController.submitFeedback,
+	"/:requestId/feedback",
+	auth(Role.CITIZEN),
+	validateRequest(RequestFeedbackValidation.createFeedbackSchema),
+	requestFeedbackController.submitFeedback,
 );
 requestFeedbackRoutes.get(
-  "/:requestId/feedback",
-  auth(Role.CITIZEN, Role.ADMIN),
-  requestFeedbackController.getMyFeedback,
+	"/:requestId/feedback",
+	auth(Role.CITIZEN, Role.ADMIN),
+	requestFeedbackController.getMyFeedback,
 );
 
 const requestFeedbackReportRoutes = Router();
 requestFeedbackReportRoutes.get(
-  "/report",
-  auth(Role.ADMIN),
-  validateRequest(RequestFeedbackValidation.reportQuerySchema, "query"),
-  requestFeedbackController.getReport,
+	"/report",
+	auth(Role.ADMIN),
+	validateRequest(RequestFeedbackValidation.reportQuerySchema, "query"),
+	requestFeedbackController.getReport,
 );
 
 export { requestFeedbackRoutes, requestFeedbackReportRoutes };

@@ -8,10 +8,10 @@ import { dashboardQuerySchema } from "./dashboard.validation";
 const router = Router();
 
 router.get(
-  "/admin",
-  auth(Role.ADMIN),
-  validateRequest(dashboardQuerySchema, "query"),
-  dashboardController.getAdminDashboard,
+	"/admin",
+	auth(Role.ADMIN),
+	validateRequest(dashboardQuerySchema, "query"),
+	dashboardController.getAdminDashboard,
 );
 
 router.get("/public/stats", dashboardController.getPublicStats);

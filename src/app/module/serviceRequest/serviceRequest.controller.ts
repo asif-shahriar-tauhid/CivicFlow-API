@@ -9,322 +9,325 @@ import { requestStateMachineService } from "./requestStateMachine.service";
 import { emitAuditLog, actorFromReq } from "../auditLog/auditLog.service";
 
 const currentUser = (req: Request): RequestUser => {
-  if (!req.user) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Authentication is required.");
-  }
-  return req.user;
+	if (!req.user) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "Authentication is required.");
+	}
+	return req.user;
 };
 
 const extractFiles = (req: Request): Express.Multer.File[] | undefined => {
-  const files: Express.Multer.File[] = [];
-  if (req.file) files.push(req.file);
-  if (Array.isArray(req.files)) {
-    files.push(...req.files);
-  } else if (req.files && typeof req.files === "object") {
-    for (const group of Object.values(req.files)) {
-      if (Array.isArray(group)) files.push(...group);
-    }
-  }
-  return files.length > 0 ? files : undefined;
+	const files: Express.Multer.File[] = [];
+	if (req.file) files.push(req.file);
+	if (Array.isArray(req.files)) {
+		files.push(...req.files);
+	} else if (req.files && typeof req.files === "object") {
+		for (const group of Object.values(req.files)) {
+			if (Array.isArray(group)) files.push(...group);
+		}
+	}
+	return files.length > 0 ? files : undefined;
 };
 
 const createServiceRequest = catchAsync(async (req: Request, res: Response) => {
-  const data = await serviceRequestServices.createServiceRequest(
-    req.body,
-    currentUser(req),
-    extractFiles(req),
-  );
-  emitAuditLog({
-    ...actorFromReq(req),
-    action: "REQUEST_CREATED",
-    entity: "ServiceRequest",
-    entityId: data.id,
-    after: data,
-  });
-  sendResponse(res, {
-    statusCode: httpStatus.CREATED,
-    success: true,
-    message: "Service request created successfully.",
-    data,
-  });
+	const data = await serviceRequestServices.createServiceRequest(
+		req.body,
+		currentUser(req),
+		extractFiles(req),
+	);
+	emitAuditLog({
+		...actorFromReq(req),
+		action: "REQUEST_CREATED",
+		entity: "ServiceRequest",
+		entityId: data.id,
+		after: data,
+	});
+	sendResponse(res, {
+		statusCode: httpStatus.CREATED,
+		success: true,
+		message: "Service request created successfully.",
+		data,
+	});
 });
 
 const listServiceRequests = catchAsync(async (req: Request, res: Response) => {
-  const result = await serviceRequestServices.listServiceRequests(
-    req.query,
-    currentUser(req),
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Service requests retrieved successfully.",
-    ...result,
-  });
+	const result = await serviceRequestServices.listServiceRequests(
+		req.query,
+		currentUser(req),
+	);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Service requests retrieved successfully.",
+		...result,
+	});
 });
 
 const getServiceRequest = catchAsync(async (req: Request, res: Response) => {
-  const data = await serviceRequestServices.getServiceRequest(
-    req.params.requestId as string,
-    currentUser(req),
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Service request retrieved successfully.",
-    data,
-  });
+	const data = await serviceRequestServices.getServiceRequest(
+		req.params.requestId as string,
+		currentUser(req),
+	);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Service request retrieved successfully.",
+		data,
+	});
 });
 
 const updateServiceRequest = catchAsync(async (req: Request, res: Response) => {
-  const data = await serviceRequestServices.updateServiceRequest(
-    req.params.requestId as string,
-    req.body,
-    currentUser(req),
-  );
-  emitAuditLog({
-    ...actorFromReq(req),
-    action: "REQUEST_UPDATED",
-    entity: "ServiceRequest",
-    entityId: req.params.requestId as string,
-    before: { updatedFields: Object.keys(req.body) },
-    after: data,
-  });
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Service request updated successfully.",
-    data,
-  });
+	const data = await serviceRequestServices.updateServiceRequest(
+		req.params.requestId as string,
+		req.body,
+		currentUser(req),
+	);
+	emitAuditLog({
+		...actorFromReq(req),
+		action: "REQUEST_UPDATED",
+		entity: "ServiceRequest",
+		entityId: req.params.requestId as string,
+		before: { updatedFields: Object.keys(req.body) },
+		after: data,
+	});
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Service request updated successfully.",
+		data,
+	});
 });
 
 const deleteServiceRequest = catchAsync(async (req: Request, res: Response) => {
-  const data = await serviceRequestServices.deleteServiceRequest(
-    req.params.requestId as string,
-    currentUser(req),
-  );
-  emitAuditLog({
-    ...actorFromReq(req),
-    action: "REQUEST_SOFT_DELETED",
-    entity: "ServiceRequest",
-    entityId: req.params.requestId as string,
-    after: { isDeleted: true },
-  });
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Service request deleted successfully.",
-    data,
-  });
+	const data = await serviceRequestServices.deleteServiceRequest(
+		req.params.requestId as string,
+		currentUser(req),
+	);
+	emitAuditLog({
+		...actorFromReq(req),
+		action: "REQUEST_SOFT_DELETED",
+		entity: "ServiceRequest",
+		entityId: req.params.requestId as string,
+		after: { isDeleted: true },
+	});
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Service request deleted successfully.",
+		data,
+	});
 });
 
 const routeServiceRequest = catchAsync(async (req: Request, res: Response) => {
-  const data = await serviceRequestServices.routeServiceRequest(
-    req.params.requestId as string,
-    currentUser(req),
-  );
-  emitAuditLog({
-    ...actorFromReq(req),
-    action: "REQUEST_ROUTED",
-    entity: "ServiceRequest",
-    entityId: req.params.requestId as string,
-    after: { departmentId: data.departmentId, routingStatus: data.routingStatus },
-  });
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Service request routing evaluated successfully.",
-    data,
-  });
+	const data = await serviceRequestServices.routeServiceRequest(
+		req.params.requestId as string,
+		currentUser(req),
+	);
+	emitAuditLog({
+		...actorFromReq(req),
+		action: "REQUEST_ROUTED",
+		entity: "ServiceRequest",
+		entityId: req.params.requestId as string,
+		after: {
+			departmentId: data.departmentId,
+			routingStatus: data.routingStatus,
+		},
+	});
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Service request routing evaluated successfully.",
+		data,
+	});
 });
 
 const assignServiceRequest = catchAsync(async (req: Request, res: Response) => {
-  const data = await serviceRequestServices.assignServiceRequest(
-    req.params.requestId as string,
-    req.body,
-    currentUser(req),
-  );
-  emitAuditLog({
-    ...actorFromReq(req),
-    action: "REQUEST_ASSIGNED",
-    entity: "ServiceRequest",
-    entityId: req.params.requestId as string,
-    after: { assignedToId: req.body.assignedToId },
-  });
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Service request assigned successfully.",
-    data,
-  });
+	const data = await serviceRequestServices.assignServiceRequest(
+		req.params.requestId as string,
+		req.body,
+		currentUser(req),
+	);
+	emitAuditLog({
+		...actorFromReq(req),
+		action: "REQUEST_ASSIGNED",
+		entity: "ServiceRequest",
+		entityId: req.params.requestId as string,
+		after: { assignedToId: req.body.assignedToId },
+	});
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Service request assigned successfully.",
+		data,
+	});
 });
 
 const reassignServiceRequest = catchAsync(
-  async (req: Request, res: Response) => {
-    const data = await serviceRequestServices.reassignServiceRequest(
-      req.params.requestId as string,
-      req.body,
-      currentUser(req),
-    );
-    emitAuditLog({
-      ...actorFromReq(req),
-      action: "REQUEST_REASSIGNED",
-      entity: "ServiceRequest",
-      entityId: req.params.requestId as string,
-      after: { assignedToId: req.body.assignedToId },
-    });
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Service request reassigned successfully.",
-      data,
-    });
-  },
+	async (req: Request, res: Response) => {
+		const data = await serviceRequestServices.reassignServiceRequest(
+			req.params.requestId as string,
+			req.body,
+			currentUser(req),
+		);
+		emitAuditLog({
+			...actorFromReq(req),
+			action: "REQUEST_REASSIGNED",
+			entity: "ServiceRequest",
+			entityId: req.params.requestId as string,
+			after: { assignedToId: req.body.assignedToId },
+		});
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			success: true,
+			message: "Service request reassigned successfully.",
+			data,
+		});
+	},
 );
 
 const myQueue = catchAsync(async (req: Request, res: Response) => {
-  const result = await serviceRequestServices.getMyQueue(
-    req.query,
-    currentUser(req),
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "My work queue retrieved successfully.",
-    ...result,
-  });
+	const result = await serviceRequestServices.getMyQueue(
+		req.query,
+		currentUser(req),
+	);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "My work queue retrieved successfully.",
+		...result,
+	});
 });
 
 const departmentQueue = catchAsync(async (req: Request, res: Response) => {
-  const result = await serviceRequestServices.getDepartmentQueue(
-    req.query,
-    currentUser(req),
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Department work queue retrieved successfully.",
-    ...result,
-  });
+	const result = await serviceRequestServices.getDepartmentQueue(
+		req.query,
+		currentUser(req),
+	);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Department work queue retrieved successfully.",
+		...result,
+	});
 });
 
 const transitionServiceRequest = catchAsync(
-  async (req: Request, res: Response) => {
-    const data = await requestStateMachineService.transition(
-      req.params.requestId as string,
-      req.body.status,
-      currentUser(req),
-      { reason: req.body.reason },
-    );
-    emitAuditLog({
-      ...actorFromReq(req),
-      action: "STATUS_TRANSITION",
-      entity: "ServiceRequest",
-      entityId: req.params.requestId as string,
-      after: { status: req.body.status, reason: req.body.reason },
-    });
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Service request status updated successfully.",
-      data,
-    });
-  },
+	async (req: Request, res: Response) => {
+		const data = await requestStateMachineService.transition(
+			req.params.requestId as string,
+			req.body.status,
+			currentUser(req),
+			{ reason: req.body.reason },
+		);
+		emitAuditLog({
+			...actorFromReq(req),
+			action: "STATUS_TRANSITION",
+			entity: "ServiceRequest",
+			entityId: req.params.requestId as string,
+			after: { status: req.body.status, reason: req.body.reason },
+		});
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			success: true,
+			message: "Service request status updated successfully.",
+			data,
+		});
+	},
 );
 
 const addInvestigationNote = catchAsync(async (req: Request, res: Response) => {
-  const data = await requestStateMachineService.addInvestigationNote(
-    req.params.requestId as string,
-    req.body.note,
-    currentUser(req),
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.CREATED,
-    success: true,
-    message: "Investigation note added successfully.",
-    data,
-  });
+	const data = await requestStateMachineService.addInvestigationNote(
+		req.params.requestId as string,
+		req.body.note,
+		currentUser(req),
+	);
+	sendResponse(res, {
+		statusCode: httpStatus.CREATED,
+		success: true,
+		message: "Investigation note added successfully.",
+		data,
+	});
 });
 
 const resolveServiceRequest = catchAsync(
-  async (req: Request, res: Response) => {
-    const data = await requestStateMachineService.resolve(
-      req.params.requestId as string,
-      req.body.reason,
-      currentUser(req),
-    );
-    emitAuditLog({
-      ...actorFromReq(req),
-      action: "REQUEST_RESOLVED",
-      entity: "ServiceRequest",
-      entityId: req.params.requestId as string,
-      after: { status: "RESOLVED", reason: req.body.reason },
-    });
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Service request resolved successfully.",
-      data,
-    });
-  },
+	async (req: Request, res: Response) => {
+		const data = await requestStateMachineService.resolve(
+			req.params.requestId as string,
+			req.body.reason,
+			currentUser(req),
+		);
+		emitAuditLog({
+			...actorFromReq(req),
+			action: "REQUEST_RESOLVED",
+			entity: "ServiceRequest",
+			entityId: req.params.requestId as string,
+			after: { status: "RESOLVED", reason: req.body.reason },
+		});
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			success: true,
+			message: "Service request resolved successfully.",
+			data,
+		});
+	},
 );
 
 const confirmServiceRequest = catchAsync(
-  async (req: Request, res: Response) => {
-    const data = await requestStateMachineService.confirm(
-      req.params.requestId as string,
-      currentUser(req),
-    );
-    emitAuditLog({
-      ...actorFromReq(req),
-      action: "REQUEST_CONFIRMED",
-      entity: "ServiceRequest",
-      entityId: req.params.requestId as string,
-      after: { status: "CLOSED" },
-    });
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Service request confirmed successfully.",
-      data,
-    });
-  },
+	async (req: Request, res: Response) => {
+		const data = await requestStateMachineService.confirm(
+			req.params.requestId as string,
+			currentUser(req),
+		);
+		emitAuditLog({
+			...actorFromReq(req),
+			action: "REQUEST_CONFIRMED",
+			entity: "ServiceRequest",
+			entityId: req.params.requestId as string,
+			after: { status: "CLOSED" },
+		});
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			success: true,
+			message: "Service request confirmed successfully.",
+			data,
+		});
+	},
 );
 
 const reopenServiceRequest = catchAsync(async (req: Request, res: Response) => {
-  const data = await requestStateMachineService.reopen(
-    req.params.requestId as string,
-    req.body.reason,
-    currentUser(req),
-  );
-  emitAuditLog({
-    ...actorFromReq(req),
-    action: "REQUEST_REOPENED",
-    entity: "ServiceRequest",
-    entityId: req.params.requestId as string,
-    after: { status: "REOPENED", reason: req.body.reason },
-  });
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Service request reopened successfully.",
-    data,
-  });
+	const data = await requestStateMachineService.reopen(
+		req.params.requestId as string,
+		req.body.reason,
+		currentUser(req),
+	);
+	emitAuditLog({
+		...actorFromReq(req),
+		action: "REQUEST_REOPENED",
+		entity: "ServiceRequest",
+		entityId: req.params.requestId as string,
+		after: { status: "REOPENED", reason: req.body.reason },
+	});
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Service request reopened successfully.",
+		data,
+	});
 });
 
 export const serviceRequestController = {
-  createServiceRequest,
-  listServiceRequests,
-  getServiceRequest,
-  updateServiceRequest,
-  deleteServiceRequest,
-  routeServiceRequest,
-  assignServiceRequest,
-  reassignServiceRequest,
-  myQueue,
-  departmentQueue,
-  transitionServiceRequest,
-  addInvestigationNote,
-  resolveServiceRequest,
-  confirmServiceRequest,
-  reopenServiceRequest,
+	createServiceRequest,
+	listServiceRequests,
+	getServiceRequest,
+	updateServiceRequest,
+	deleteServiceRequest,
+	routeServiceRequest,
+	assignServiceRequest,
+	reassignServiceRequest,
+	myQueue,
+	departmentQueue,
+	transitionServiceRequest,
+	addInvestigationNote,
+	resolveServiceRequest,
+	confirmServiceRequest,
+	reopenServiceRequest,
 };

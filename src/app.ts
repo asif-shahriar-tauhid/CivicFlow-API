@@ -14,8 +14,8 @@ import { UserRoutes } from "./app/module/user/user.route";
 import { NotificationRoutes } from "./app/module/notification/notification.route";
 import { RequestPaymentRoutes } from "./app/module/requestPayment/requestPayment.route";
 import {
-  requestFeedbackReportRoutes,
-  requestFeedbackRoutes,
+	requestFeedbackReportRoutes,
+	requestFeedbackRoutes,
 } from "./app/module/requestFeedback/requestFeedback.route";
 import { AuditLogRoutes } from "./app/module/auditLog/auditLog.route";
 import { DashboardRoutes } from "./app/module/dashboard/dashboard.route";
@@ -27,9 +27,9 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", (_req, res) =>
-  res
-    .status(httpStatus.OK)
-    .json({ success: true, message: "Welcome to CivicFlow." }),
+	res
+		.status(httpStatus.OK)
+		.json({ success: true, message: "Welcome to CivicFlow." }),
 );
 app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/user", UserRoutes);

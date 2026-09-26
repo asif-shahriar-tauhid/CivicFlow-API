@@ -7,17 +7,17 @@ import { UserController } from "./user.controller";
 const router = Router();
 
 router.patch(
-  "/profile-image",
-  auth(Role.CITIZEN, Role.ADMIN, Role.STAFF),
-  upload.single("profileImage"),
-  UserController.uploadProfileImage,
+	"/profile-image",
+	auth(Role.CITIZEN, Role.ADMIN, Role.STAFF),
+	upload.single("profileImage"),
+	UserController.uploadProfileImage,
 );
 
 router.get("/", auth(Role.ADMIN), UserController.getAllUsers);
 router.get(
-  "/:userId",
-  auth(Role.ADMIN, Role.STAFF, Role.CITIZEN),
-  UserController.getUserById,
+	"/:userId",
+	auth(Role.ADMIN, Role.STAFF, Role.CITIZEN),
+	UserController.getUserById,
 );
 router.patch("/:userId", auth(Role.ADMIN), UserController.updateUser);
 router.delete("/:userId", auth(Role.ADMIN), UserController.softDeleteUser);
