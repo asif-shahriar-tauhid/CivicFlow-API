@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "test": "node --import tsx --test tests/**/*.test.ts",
     "start": "node dist/src/server.js",
+    "test": "node --import tsx --test tests/**/*.test.ts",
     "format:check": "biome format ./src",
     "format:fix": "biome format --write ./src",
     "lint:check": "biome lint ./src",
