@@ -4,8 +4,9 @@ model Payment {
   amount   Decimal       @db.Decimal(10, 2)
   currency String        @default("BDT")
 
-  paymentGateway        String @default("bkash")
-  merchantInvoiceNumber String @unique
+  paymentGateway        String  @default("bkash")
+  merchantInvoiceNumber String  @unique
+  checkoutUrl           String?
 
   bkashPaymentId String? @unique
   bkashTrxId     String?
@@ -14,16 +15,27 @@ model Payment {
 
   gatewayResponse Json?
 
+  invoiceUrl      String?
+  invoicePublicId String?
+
   refundTrxId  String?
   refundAmount Decimal? @db.Decimal(10, 2)
   refundReason String?
   refundAt     String?
 
-  appointmentId String      @unique
-  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  appointmentId    String?         @unique
+  appointment      Appointment?    @relation(fields: [appointmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  serviceRequestId String?
+  serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  initiatedAt DateTime?
+  completedAt DateTime?
+  failedAt    DateTime?
+  cancelledAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([serviceRequestId, status, createdAt], name: "idx_payment_request_status_created")
   @@map("payments")
 }

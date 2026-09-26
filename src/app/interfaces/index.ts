@@ -15,4 +15,6 @@ export interface RequestUser {
   name: string;
   userId: string;
   role: Role;
+  departmentId?: string | null;
 }
+

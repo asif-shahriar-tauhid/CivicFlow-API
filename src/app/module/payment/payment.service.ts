@@ -154,6 +154,9 @@ const getSinglePayment = async (paymentId: string, user: RequestUser) => {
   if (!payment) {
     throw new AppError(httpStatus.NOT_FOUND, "Payment not found.");
   }
+  if (!payment.appointment) {
+    throw new AppError(httpStatus.NOT_FOUND, "Appointment payment not found.");
+  }
 
   if (user.role === Role.CITIZEN) {
     if (payment.appointment.citizen.userId !== user.userId) {
@@ -178,11 +181,12 @@ const notifyPaymentOutcome = async (
     },
   });
   if (payment)
-    publishPaymentOutcome(
-      payment.appointment.citizen.userId,
-      payment.id,
-      status,
-    );
+    if (payment.appointment)
+      publishPaymentOutcome(
+        payment.appointment.citizen.userId,
+        payment.id,
+        status,
+      );
 };
 
 export const paymentServices = {

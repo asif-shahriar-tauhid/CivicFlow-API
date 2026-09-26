@@ -44,6 +44,7 @@ model ServiceRequest {
     investigationNotes RequestInvestigationNote[]
     resolutions        RequestResolution[]
     slaAudits          RequestSlaAudit[]
+    payments           Payment[]
 
     @@index([citizenId, status], name: "idx_service_request_citizen_status")
     @@index([categoryId, status], name: "idx_service_request_category_status")

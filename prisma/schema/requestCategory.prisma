@@ -2,6 +2,8 @@ model RequestCategory {
     id          String   @id @default(uuid())
     name        String   @unique
     description String?
+    feeAmount   Decimal  @default(0) @db.Decimal(10, 2)
+    feeCurrency String   @default("BDT")
     slaMinutes  Int      @default(1440)
     isActive    Boolean  @default(true)
     createdAt   DateTime @default(now())

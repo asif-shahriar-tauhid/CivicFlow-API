@@ -37,6 +37,15 @@ const config = {
   bkash_app_key: process.env.BKASH_APP_KEY,
   bkash_app_secret: process.env.BKASH_APP_SECRET,
   bkash_callback_url: process.env.BKASH_CALLBACK_URL,
+  bkash_success_url:
+    process.env.BKASH_SUCCESS_URL ||
+    "http://localhost:5000/api/v1/request-payments/bkash/callback/success",
+  bkash_cancel_url:
+    process.env.BKASH_CANCEL_URL ||
+    "http://localhost:5000/api/v1/request-payments/bkash/callback/cancel",
+  bkash_failure_url:
+    process.env.BKASH_FAILURE_URL ||
+    "http://localhost:5000/api/v1/request-payments/bkash/callback/failure",
 };
 
 export default config;

@@ -5,6 +5,18 @@ import httpStatus from "http-status";
 
 export const getBkashIdToken = async () => {
   try {
+    if (
+      !config.bkash_base_url ||
+      !config.bkash_username ||
+      !config.bkash_password ||
+      !config.bkash_app_key ||
+      !config.bkash_app_secret
+    ) {
+      throw new AppError(
+        httpStatus.SERVICE_UNAVAILABLE,
+        "bKash is not configured.",
+      );
+    }
     const IdTokenKey = "bkash: idToken";
     const RefreshTokenKey = "bkash: refreshToken";
 
@@ -12,7 +24,6 @@ export const getBkashIdToken = async () => {
     const bkashIdTokenTTL = await redisClient.ttl(IdTokenKey);
 
     const bkashRefreshToken = await redisClient.get(RefreshTokenKey);
-    const bkashRefreshTokenTTL = await redisClient.ttl(RefreshTokenKey);
 
     if ((bkashIdTokenTTL < 600 || !bkashIdToken) && bkashRefreshToken) {
       const refreshTokenResponse = await fetch(
@@ -22,8 +33,8 @@ export const getBkashIdToken = async () => {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            username: config.bkash_username!,
-            password: config.bkash_password!,
+            username: config.bkash_username,
+            password: config.bkash_password,
           },
           body: JSON.stringify({
             app_key: config.bkash_app_key,
@@ -63,8 +74,8 @@ export const getBkashIdToken = async () => {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          username: config.bkash_username!,
-          password: config.bkash_password!,
+          username: config.bkash_username,
+          password: config.bkash_password,
         },
         body: JSON.stringify({
           app_key: config.bkash_app_key,
@@ -99,10 +110,94 @@ export const getBkashIdToken = async () => {
     bkashIdToken = result.id_token;
 
     return bkashIdToken;
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof AppError) {
       throw error;
     }
-    throw new AppError(httpStatus.BAD_GATEWAY, error.message);
+    throw new AppError(
+      httpStatus.BAD_GATEWAY,
+      error instanceof Error ? error.message : "bKash authentication failed.",
+    );
   }
 };
+
+type BkashRequest = {
+  amount: string;
+  currency: string;
+  intent: string;
+  merchantInvoiceNumber: string;
+  callbackURL: string;
+};
+
+const bkashRequest = async <T>(
+  path: string,
+  method: "POST" | "GET",
+  body?: unknown,
+) => {
+  const token = await getBkashIdToken();
+  const appKey = config.bkash_app_key;
+  if (!token || !appKey) {
+    throw new AppError(httpStatus.BAD_GATEWAY, "bKash authentication failed.");
+  }
+  const response = await fetch(`${config.bkash_base_url}${path}`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: token,
+      "X-APP-Key": appKey,
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const result = (await response.json()) as T & {
+    statusCode?: string;
+    statusMessage?: string;
+  };
+  if (!response.ok || (result.statusCode && result.statusCode !== "0000")) {
+    throw new AppError(
+      httpStatus.BAD_GATEWAY,
+      result.statusMessage || "bKash request failed.",
+    );
+  }
+  return result;
+};
+
+export const createBkashPayment = (payload: BkashRequest) =>
+  bkashRequest<{
+    paymentID: string;
+    bkashURL: string;
+    transactionStatus: string;
+  }>("/tokenized/checkout/create", "POST", {
+    mode: "0011",
+    payerReference: payload.merchantInvoiceNumber,
+    callbackURL: payload.callbackURL,
+    amount: payload.amount,
+    currency: payload.currency,
+    intent: payload.intent,
+    merchantInvoiceNumber: payload.merchantInvoiceNumber,
+  });
+
+export const executeBkashPayment = (paymentId: string) =>
+  bkashRequest<{
+    paymentID: string;
+    trxID?: string;
+    transactionStatus: string;
+    amount?: string;
+    currency?: string;
+  }>(
+    `/tokenized/checkout/execute/${encodeURIComponent(paymentId)}`,
+    "POST",
+    {},
+  );
+
+export const queryBkashPayment = (paymentId: string) =>
+  bkashRequest<{
+    paymentID: string;
+    trxID?: string;
+    transactionStatus: string;
+    amount?: string;
+    currency?: string;
+  }>(
+    `/tokenized/checkout/payment/status/${encodeURIComponent(paymentId)}`,
+    "GET",
+  );
