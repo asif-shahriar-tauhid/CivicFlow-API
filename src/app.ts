@@ -26,11 +26,36 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-app.get("/", (_req, res) =>
+app.get("/", (req, res) => {
+	if (req.query.paymentID) {
+		const status = String(req.query.status || "success");
+		const queryString = new URLSearchParams(
+			req.query as Record<string, string>,
+		).toString();
+		return res.redirect(
+			`/api/v1/request-payments/bkash/callback/${status}?${queryString}`,
+		);
+	}
 	res
 		.status(httpStatus.OK)
-		.json({ success: true, message: "Welcome to CivicFlow." }),
-);
+		.json({ success: true, message: "Welcome to CivicFlow." });
+});
+
+app.get("/api/v1", (req, res) => {
+	if (req.query.paymentID) {
+		const status = String(req.query.status || "success");
+		const queryString = new URLSearchParams(
+			req.query as Record<string, string>,
+		).toString();
+		return res.redirect(
+			`/api/v1/request-payments/bkash/callback/${status}?${queryString}`,
+		);
+	}
+	res
+		.status(httpStatus.OK)
+		.json({ success: true, message: "CivicFlow API v1" });
+});
+
 app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/user", UserRoutes);
 app.use("/api/v1/payment", PaymentRoutes);

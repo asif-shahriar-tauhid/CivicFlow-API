@@ -152,11 +152,16 @@ const bkashRequest = async <T>(
 	const result = (await response.json()) as T & {
 		statusCode?: string;
 		statusMessage?: string;
+		message?: string;
+		errorMessage?: string;
 	};
 	if (!response.ok || (result.statusCode && result.statusCode !== "0000")) {
 		throw new AppError(
 			httpStatus.BAD_GATEWAY,
-			result.statusMessage || "bKash request failed.",
+			result.statusMessage ||
+				result.message ||
+				result.errorMessage ||
+				"bKash request failed.",
 		);
 	}
 	return result;
@@ -177,18 +182,27 @@ export const createBkashPayment = (payload: BkashRequest) =>
 		merchantInvoiceNumber: payload.merchantInvoiceNumber,
 	});
 
-export const executeBkashPayment = (paymentId: string) =>
-	bkashRequest<{
-		paymentID: string;
-		trxID?: string;
-		transactionStatus: string;
-		amount?: string;
-		currency?: string;
-	}>(
-		`/tokenized/checkout/execute/${encodeURIComponent(paymentId)}`,
-		"POST",
-		{},
-	);
+export const executeBkashPayment = async (paymentId: string) => {
+	try {
+		return await bkashRequest<{
+			paymentID: string;
+			trxID?: string;
+			transactionStatus: string;
+			amount?: string;
+			currency?: string;
+		}>("/tokenized/checkout/execute", "POST", {
+			paymentID: paymentId,
+		});
+	} catch (error: any) {
+		if (
+			error?.message?.includes("already been completed") ||
+			error?.message?.includes("2062")
+		) {
+			return null;
+		}
+		throw error;
+	}
+};
 
 export const queryBkashPayment = (paymentId: string) =>
 	bkashRequest<{
@@ -197,7 +211,6 @@ export const queryBkashPayment = (paymentId: string) =>
 		transactionStatus: string;
 		amount?: string;
 		currency?: string;
-	}>(
-		`/tokenized/checkout/payment/status/${encodeURIComponent(paymentId)}`,
-		"GET",
-	);
+	}>("/tokenized/checkout/payment/status", "POST", {
+		paymentID: paymentId,
+	});

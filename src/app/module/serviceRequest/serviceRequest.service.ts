@@ -347,71 +347,77 @@ const createServiceRequest = async (
 	}
 
 	try {
-		const createdRequest = await prisma.$transaction(async (tx) => {
-			await assertActiveCategory(tx, categoryId);
-			const createdAt = new Date();
-			const slaDueAt = await slaServices.getDueAtForCategory(
-				tx,
-				categoryId,
-				createdAt,
-			);
-			const request = await tx.serviceRequest.create({
-				data: {
-					...data,
-					requestNumber: requestNumber(),
+		const createdRequest = await prisma.$transaction(
+			async (tx) => {
+				await assertActiveCategory(tx, categoryId);
+				const createdAt = new Date();
+				const slaDueAt = await slaServices.getDueAtForCategory(
+					tx,
+					categoryId,
 					createdAt,
-					slaDueAt,
-					citizen: { connect: { id: citizenId } },
-					category: categoryId ? { connect: { id: categoryId } } : undefined,
-					createdBy: { connect: { id: user.userId } },
-					attachments:
-						uploadResults.length > 0
-							? {
-									create: uploadResults.map(({ file, uploaded }) => ({
-										url: uploaded.secure_url,
-										publicId: uploaded.public_id,
-										fileName: file.originalname,
-										mimeType: file.mimetype,
-										fileSize: file.size,
-										format: uploaded.format ?? null,
-										resourceType: uploaded.resource_type ?? "image",
-										uploaderId: user.userId,
-									})),
-								}
-							: undefined,
-				},
-				select: { id: true },
-			});
-			await tx.requestStatusHistory.create({
-				data: {
-					requestId: request.id,
-					from: null,
-					to: "SUBMITTED",
-					reason: "Request submitted.",
-					actorId: user.userId,
-				},
-			});
-
-			const routed = await routeRequestInTransaction(
-				tx,
-				request.id,
-				user.userId,
-				"Initial request routing",
-				true,
-			);
-
-			if (
-				user.role === Role.STAFF &&
-				routed.departmentId !== staffDepartmentId
-			) {
-				throw new AppError(
-					httpStatus.FORBIDDEN,
-					"The request does not route to your department.",
 				);
-			}
+				const request = await tx.serviceRequest.create({
+					data: {
+						...data,
+						requestNumber: requestNumber(),
+						createdAt,
+						slaDueAt,
+						citizen: { connect: { id: citizenId } },
+						category: categoryId ? { connect: { id: categoryId } } : undefined,
+						createdBy: { connect: { id: user.userId } },
+						attachments:
+							uploadResults.length > 0
+								? {
+										create: uploadResults.map(({ file, uploaded }) => ({
+											url: uploaded.secure_url,
+											publicId: uploaded.public_id,
+											fileName: file.originalname,
+											mimeType: file.mimetype,
+											fileSize: file.size,
+											format: uploaded.format ?? null,
+											resourceType: uploaded.resource_type ?? "image",
+											uploaderId: user.userId,
+										})),
+									}
+								: undefined,
+					},
+					select: { id: true },
+				});
+				await tx.requestStatusHistory.create({
+					data: {
+						requestId: request.id,
+						from: null,
+						to: "SUBMITTED",
+						reason: "Request submitted.",
+						actorId: user.userId,
+					},
+				});
 
-			return routed;
-		});
+				const routed = await routeRequestInTransaction(
+					tx,
+					request.id,
+					user.userId,
+					"Initial request routing",
+					true,
+				);
+
+				if (
+					user.role === Role.STAFF &&
+					routed.departmentId !== staffDepartmentId
+				) {
+					throw new AppError(
+						httpStatus.FORBIDDEN,
+						"The request does not route to your department.",
+					);
+				}
+
+				return routed;
+			},
+			{
+				maxWait: 10_000,
+				timeout: 15_000,
+			},
+		);
 		publishNotification({
 			recipientId: createdRequest.citizen.userId,
 			eventKey: NotificationEvent.REQUEST_SUBMITTED,
