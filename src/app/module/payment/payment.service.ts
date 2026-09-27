@@ -123,9 +123,13 @@ const getAllPayments = async (query: IQuery) => {
 };
 
 const getSinglePayment = async (paymentId: string, user: RequestUser) => {
-	const payment = await prisma.payment.findUnique({
+	const payment = await prisma.payment.findFirst({
 		where: {
-			id: paymentId,
+			OR: [
+				{ id: paymentId },
+				{ serviceRequestId: paymentId },
+				{ appointmentId: paymentId },
+			],
 		},
 		include: {
 			appointment: {
@@ -148,18 +152,36 @@ const getSinglePayment = async (paymentId: string, user: RequestUser) => {
 					schedule: true,
 				},
 			},
+			serviceRequest: {
+				include: {
+					citizen: {
+						select: {
+							id: true,
+							name: true,
+							email: true,
+							userId: true,
+						},
+					},
+					department: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+				},
+			},
 		},
 	});
 
 	if (!payment) {
 		throw new AppError(httpStatus.NOT_FOUND, "Payment not found.");
 	}
-	if (!payment.appointment) {
-		throw new AppError(httpStatus.NOT_FOUND, "Appointment payment not found.");
-	}
 
 	if (user.role === Role.CITIZEN) {
-		if (payment.appointment.citizen.userId !== user.userId) {
+		const ownerUserId =
+			payment.appointment?.citizen?.userId ||
+			payment.serviceRequest?.citizen?.userId;
+		if (ownerUserId && ownerUserId !== user.userId) {
 			throw new AppError(
 				httpStatus.FORBIDDEN,
 				"You are not allowed to view this payment.",

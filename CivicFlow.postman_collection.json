@@ -1,0 +1,1840 @@
+{
+  "info": {
+    "_postman_id": "2dfc045a-d2f2-434d-ae59-333f8f123395",
+    "name": "CivicFlow",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54703524",
+    "_collection_link": "https://go.postman.co/collection/54703524-2dfc045a-d2f2-434d-ae59-333f8f123395?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Upload Image",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "profileImage",
+                  "type": "file",
+                  "uuid": "00e0431e-9507-47fe-ac87-b45427b14517",
+                  "src": "/C:/Users/Tauhid/Downloads/Images/Nullscode.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/user/profile-image",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "profile-image"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/user?page=1&limit=10&role=STAFF&status=ACTIVE",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "role",
+                  "value": "STAFF"
+                },
+                {
+                  "key": "status",
+                  "value": "ACTIVE"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app//api/v1/user/6e519165-a7fe-4bcd-8f4d-08e6f24dcec4",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "",
+                "api",
+                "v1",
+                "user",
+                "6e519165-a7fe-4bcd-8f4d-08e6f24dcec4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User (Faulty)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Asif Shahriar Tauhid\",\r\n  \"role\": \"STAFF\",\r\n  \"status\": \"ACTIVE\",\r\n  \"departmentId\": \"\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/user/6e519165-a7fe-4bcd-8f4d-08e6f24dcec4",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "6e519165-a7fe-4bcd-8f4d-08e6f24dcec4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Asif Shahriar Tauhid\",\r\n  \"role\": \"STAFF\",\r\n  \"status\": \"ACTIVE\",\r\n  \"departmentId\": \"\"\r\n}\r\n"
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/user/6e519165-a7fe-4bcd-8f4d-08e6f24dcec4",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "6e519165-a7fe-4bcd-8f4d-08e6f24dcec4"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Citizen",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Asif Shahriar Tauhid\",\r\n  \"email\": \"asifshahriartauhid@gmail.com\",\r\n  \"password\": \"Password@123\",\r\n  \"user\": {\r\n    \"contactNumber\": \"01937165042\"\r\n  }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/auth/register",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"asifshahriartauhid@gmail.com\",\r\n  \"otp\": \"459195\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/auth/verify-email",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "verify-email"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Credential Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    // \"email\": \"superadmin@example.com\",\r\n    \"email\": \"asifshahriartauhid@gmail.com\",\r\n    // \"email\": \"citizen.sarah@example.com\",\r\n\r\n    // \"password\": \"Password@123\"\r\n    \"password\": \"Password@@123\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/auth/login",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/auth/me",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"asifshahriartauhid@gmail.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/auth/forgot-password",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "forgot-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"asifshahriartauhid@gmail.com\",\r\n  \"otp\": \"627723\",\r\n  \"newPassword\": \"Password@@123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/auth/reset-password",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "reset-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Google Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"idToken\": \"<google_id_token_string>\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/auth/google",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "google"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/auth/refresh-token",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh-token"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Departments",
+      "item": [
+        {
+          "name": "List Departments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/departments?includeArchived=false",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "",
+                "api",
+                "v1",
+                "departments"
+              ],
+              "query": [
+                {
+                  "key": "includeArchived",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create New Department",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Pesticide Management & Control\",\r\n  \"description\": \"Handles pesticide collection, recycling, drainage clearing, and street cleanliness.\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/departments",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "departments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Archive Department",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"asifshahriartauhid@gmail.com\"\r\n}"
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/departments/2c7744f0-5d57-4358-8aa3-d75d0ee131a4/archive",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "departments",
+                "2c7744f0-5d57-4358-8aa3-d75d0ee131a4",
+                "archive"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Staff to department",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"departmentId\": null\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/departments/staff/497220c3-2936-4763-8352-a82a713c1653/department",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "departments",
+                "staff",
+                "497220c3-2936-4763-8352-a82a713c1653",
+                "department"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Category Routing Rules",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/departments/routing-rules?includeArchived=false",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "departments",
+                "routing-rules"
+              ],
+              "query": [
+                {
+                  "key": "includeArchived",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Category Routing Rule",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"categoryId\": \"0eda1652-e7e4-4eb5-82cf-c558d96b24dd\",\r\n  \"departmentId\": \"5d673375-4b40-498e-8e61-9deebc59704f\",\r\n  \"location\": \"\",\r\n  \"priority\": 3\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/departments/routing-rules",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "departments",
+                "routing-rules"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Archive Routing Rule",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/departments/routing-rules/9f783bc4-8631-4f5a-be4e-672dbf8b06c6/archive",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "departments",
+                "routing-rules",
+                "9f783bc4-8631-4f5a-be4e-672dbf8b06c6",
+                "archive"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Service Requests & Workflow",
+      "item": [
+        {
+          "name": "Create Service Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Severe Water Logging on Road 11\",\r\n  \"description\": \"After heavy rains the main drainage line has clogged and water has entered pedestrian walkways for over 24 hours.\",\r\n  \"caseType\": \"COMPLAINT\",\r\n  \"priority\": \"HIGH\",\r\n  \"location\": \"Road 12, Block D\",\r\n  \"address\": \"House 15, Road 12, Banani\",\r\n  \"ward\": \"Ward 19\",\r\n  \"zone\": \"North Zone\",\r\n  \"landmark\": \"Opposite City Bank ATM\",\r\n  \"latitude\": 23.7937,\r\n  \"longitude\": 90.4066,\r\n  \"categoryId\": \"935e2322-66bb-48ae-a7dd-d586d49f2f0a\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Service Requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests?page=1&limit=10&status=TRIAGED&priority=HIGH&sortBy=createdAt&sortOrder=desc",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "TRIAGED"
+                },
+                {
+                  "key": "priority",
+                  "value": "HIGH"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Service Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Service Request Details",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Severe Water Logging - Road 12 Drain Overflow\",\r\n  \"priority\": \"URGENT\",\r\n  \"landmark\": \"Near Banani Supermarket\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Staff My Assigned Queue",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/queue/me?page=1&limit=10&status=IN_PROGRESS",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "queue",
+                "me"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "IN_PROGRESS"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Department Queue",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/queue/department?page=1&limit=10",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "queue",
+                "department"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Transition Request Status",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"status\": \"TRIAGED\",\r\n  \"reason\": \"Request inspected by desk officer. Scheduled for on-site crew dispatch.\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700/transition",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700",
+                "transition"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Investigation Note",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"note\": \"Excavation team arrived at site. Found main drainage pipe blocked by construction debris.\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app//api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700/notes",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "",
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700",
+                "notes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Resolve Service Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"reason\": \"Debris completely cleared using vacuum excavator. Normal drainage flow restored and verified.\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700/resolve",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700",
+                "resolve"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Citizen Confirm Resolution (Close Request)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700/confirm",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700",
+                "confirm"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Citizen Reopen Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"reason\": \"Water logging returned immediately after today's shower. Drainage line remains choked.\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700/reopen",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700",
+                "reopen"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Automatic Route Service Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700/route",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700",
+                "route"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Request to Staff",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"assignedToId\": \"6fe3c932-80cd-429a-8e0a-f5c6d364959b\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700/assign",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700",
+                "assign"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reassign Request to Another Staff",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"assignedToId\": \"6fe3c932-80cd-429a-8e0a-f5c6d364959b\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700/reassign",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700",
+                "reassign"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Request",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/8047a391-d664-4d06-99a7-fa3b00cd2dec",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "8047a391-d664-4d06-99a7-fa3b00cd2dec"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Attachments",
+      "item": [
+        {
+          "name": "Add Evidence Attachment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [
+                    "/C:/Users/Tauhid/Downloads/Images/LS.png"
+                  ]
+                },
+                {
+                  "key": "caption",
+                  "value": "\"Site condition photo after rainfall\"",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700/attachments",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700",
+                "attachments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Request Attachments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700/attachments",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700",
+                "attachments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Attachment Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700/attachments/63060a5e-fb4d-42c5-8bf6-bd448352c4fc",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700",
+                "attachments",
+                "63060a5e-fb4d-42c5-8bf6-bd448352c4fc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Attachment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/0baa5581-e855-4cb0-975c-3530302a6700/attachments/63060a5e-fb4d-42c5-8bf6-bd448352c4fc",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700",
+                "attachments",
+                "63060a5e-fb4d-42c5-8bf6-bd448352c4fc"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Feedback and Analytics",
+      "item": [
+        {
+          "name": "Submit Feedback for Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"rating\": 5,\r\n  \"comment\": \"Super quick response and clean repair on the pipe!\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/608ff53d-adb1-4341-8637-72752d0c466d/feedback",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "608ff53d-adb1-4341-8637-72752d0c466d",
+                "feedback"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Feedback for Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/requests/608ff53d-adb1-4341-8637-72752d0c466d/feedback",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "requests",
+                "608ff53d-adb1-4341-8637-72752d0c466d",
+                "feedback"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Feedback Analytics & Report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/request-feedback/report?rating=5&page=1&limit=20",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "request-feedback",
+                "report"
+              ],
+              "query": [
+                {
+                  "key": "rating",
+                  "value": "5"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "SLA Management",
+      "item": [
+        {
+          "name": "List Overdue Requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/sla/overdue?page=1&limit=20",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sla",
+                "overdue"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Configure Category SLA Duration",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"slaMinutes\": 2880\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/sla/categories/935e2322-66bb-48ae-a7dd-d586d49f2f0a",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sla",
+                "categories",
+                "935e2322-66bb-48ae-a7dd-d586d49f2f0a"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Escalate Overdue Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/sla/requests/0baa5581-e855-4cb0-975c-3530302a6700/escalate",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sla",
+                "requests",
+                "0baa5581-e855-4cb0-975c-3530302a6700",
+                "escalate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Process SLA Breaches",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"limit\": 100\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/sla/process",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sla",
+                "process"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get My Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/notifications?page=1&limit=20",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Unread Notification Count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/notifications/unread-count",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                "unread-count"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark a Notification as Read",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/notifications/1229b669-6406-4247-bf8a-06b7e53239bd/read",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                "1229b669-6406-4247-bf8a-06b7e53239bd",
+                "read"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Initiate Payment Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/request-payments/requests/84698b5c-6113-42ce-821b-d712700c111a/initiate",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "request-payments",
+                "requests",
+                "84698b5c-6113-42ce-821b-d712700c111a",
+                "initiate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payment Request Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/request-payments/54b61d4f-e117-4f9c-b274-3b0f3d3d2916/status",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "request-payments",
+                "54b61d4f-e117-4f9c-b274-3b0f3d3d2916",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Simulate Payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1?paymentID=TR0011gb7Cqpr1790521818966&status=success&signature=Ztx60Y5NIy&apiVersion=1.2.0-beta/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "v1"
+              ],
+              "query": [
+                {
+                  "key": "paymentID",
+                  "value": "TR0011gb7Cqpr1790521818966"
+                },
+                {
+                  "key": "status",
+                  "value": "success"
+                },
+                {
+                  "key": "signature",
+                  "value": "Ztx60Y5NIy"
+                },
+                {
+                  "key": "apiVersion",
+                  "value": "1.2.0-beta/"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Citizen Payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/payment/my-payments?page=1&limit=10",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payment",
+                "my-payments"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All System Payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/payment/all-payments?page=1&limit=20",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payment",
+                "all-payments"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/request-payments/46cdc125-805c-4c17-b2fc-be0147b5e09b/status",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "request-payments",
+                "46cdc125-805c-4c17-b2fc-be0147b5e09b",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Invoice",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/payment/4af2b2ac-4bd6-41b6-9c92-7c24b0f49276/invoice",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payment",
+                "4af2b2ac-4bd6-41b6-9c92-7c24b0f49276",
+                "invoice"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Audit Logs",
+      "item": [
+        {
+          "name": "Audit logs search and filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/audit-logs?page=1&limit=20&sortOrder=desc",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "audit-logs"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Admin Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/dashboard/admin",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "dashboard",
+                "admin"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Public Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://civic-flow-api.vercel.app/api/v1/dashboard/public/stats",
+              "protocol": "https",
+              "host": [
+                "civic-flow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "dashboard",
+                "public",
+                "stats"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

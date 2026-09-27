@@ -142,8 +142,14 @@ const emailInvoice = async (paymentId: string): Promise<void> => {
 };
 
 const getInvoice = async (paymentId: string, user: RequestUser) => {
-	const payment = await prisma.payment.findUnique({
-		where: { id: paymentId },
+	const payment = await prisma.payment.findFirst({
+		where: {
+			OR: [
+				{ id: paymentId },
+				{ serviceRequestId: paymentId },
+				{ appointmentId: paymentId },
+			],
+		},
 		select: {
 			id: true,
 			invoiceUrl: true,
