@@ -11,3 +11,5 @@ PROJECT_ROADMAP.md
 tests/*
 .vercel
 .env*
+API_RBAC_TEST_CHECKLIST.tex
+implementation.md

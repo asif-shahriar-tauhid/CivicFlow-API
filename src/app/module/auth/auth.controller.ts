@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import httpStatus from "http-status";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import { setAuthCookies } from "../../utils/setAuthCookies";
+import { setAuthCookies, clearAuthCookies } from "../../utils/setAuthCookies";
 import type { IRequestUser } from "./auth.interface";
 import { AuthService } from "./auth.service";
 import { emitAuditLog } from "../auditLog/auditLog.service";
@@ -61,6 +61,17 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
 		success: true,
 		message: "User profile fetched successfully.",
 		data: result,
+	});
+});
+
+const logoutUser = catchAsync(async (req: Request, res: Response) => {
+	clearAuthCookies(res);
+	
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "User logged out successfully.",
+		data: null,
 	});
 });
 
@@ -136,6 +147,7 @@ export const AuthController = {
 	verifyEmail,
 	loginUser,
 	getMe,
+	logoutUser,
 	refreshToken,
 	googleLogin,
 	forgotPassword,

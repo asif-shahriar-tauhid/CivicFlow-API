@@ -19,3 +19,17 @@ export const setAuthCookies = (
 		maxAge: 604800000,
 	});
 };
+
+export const clearAuthCookies = (res: Response) => {
+	const secure = process.env.NODE_ENV === "production";
+	res.clearCookie("accessToken", {
+		httpOnly: true,
+		secure,
+		sameSite: secure ? "none" : "lax",
+	});
+	res.clearCookie("refreshToken", {
+		httpOnly: true,
+		secure,
+		sameSite: secure ? "none" : "lax",
+	});
+};

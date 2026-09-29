@@ -21,6 +21,8 @@ router.post(
 	AuthController.loginUser,
 );
 
+router.post("/logout", AuthController.logoutUser);
+
 router.get("/me", auth(), AuthController.getMe);
 
 router.post("/google", AuthController.googleLogin);
