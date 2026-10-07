@@ -23,7 +23,10 @@ const getMyPayments = async (query: IQuery, user: RequestUser) => {
 
 	const andConditions: PaymentWhereInput[] = [
 		{
-			appointment: { citizenId: citizen.id },
+			OR: [
+				{ serviceRequest: { citizenId: citizen.id } },
+				{ appointment: { citizenId: citizen.id } },
+			],
 		},
 	];
 
@@ -35,6 +38,32 @@ const getMyPayments = async (query: IQuery, user: RequestUser) => {
 			[sortBy]: sortOrder,
 		},
 		include: {
+			serviceRequest: {
+				include: {
+					citizen: {
+						select: {
+							id: true,
+							name: true,
+							email: true,
+							userId: true,
+						},
+					},
+					department: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					category: {
+						select: {
+							id: true,
+							name: true,
+							feeAmount: true,
+							feeCurrency: true,
+						},
+					},
+				},
+			},
 			appointment: {
 				include: {
 					technician: {
@@ -74,13 +103,18 @@ const getAllPayments = async (query: IQuery) => {
 
 	const andConditions: PaymentWhereInput[] = [];
 
-	if (query.citizenEmail) {
+	if (query.citizenEmail || query.email) {
+		const emailFilter = String(query.citizenEmail || query.email);
 		andConditions.push({
-			appointment: {
-				citizen: {
-					email: query.email,
-				},
-			},
+			OR: [
+				{ serviceRequest: { citizen: { email: emailFilter } } },
+				{ appointment: { citizen: { email: emailFilter } } },
+			],
+		});
+	}
+	if (query.status) {
+		andConditions.push({
+			status: query.status as any,
 		});
 	}
 
@@ -92,6 +126,32 @@ const getAllPayments = async (query: IQuery) => {
 			[sortBy]: sortOrder,
 		},
 		include: {
+			serviceRequest: {
+				include: {
+					citizen: {
+						select: {
+							id: true,
+							name: true,
+							email: true,
+							userId: true,
+						},
+					},
+					department: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					category: {
+						select: {
+							id: true,
+							name: true,
+							feeAmount: true,
+							feeCurrency: true,
+						},
+					},
+				},
+			},
 			appointment: {
 				include: {
 					technician: {
@@ -130,6 +190,9 @@ const getSinglePayment = async (paymentId: string, user: RequestUser) => {
 				{ serviceRequestId: paymentId },
 				{ appointmentId: paymentId },
 			],
+		},
+		orderBy: {
+			createdAt: "desc",
 		},
 		include: {
 			appointment: {

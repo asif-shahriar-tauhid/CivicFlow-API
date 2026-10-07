@@ -12,6 +12,8 @@ export interface PaymentStatusView {
 	paymentGateway: string;
 	merchantInvoiceNumber: string;
 	checkoutUrl: string | null;
+	serviceRequestId?: string | null;
+	invoiceUrl?: string | null;
 	initiatedAt: Date | null;
 	completedAt: Date | null;
 	failedAt: Date | null;

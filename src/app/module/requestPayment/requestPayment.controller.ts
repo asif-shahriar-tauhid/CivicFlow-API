@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import config from "../../config";
 import httpStatus from "http-status";
 import { AppError } from "../../utils/AppError";
 import { catchAsync } from "../../utils/catchAsync";
@@ -84,6 +85,17 @@ const callback = catchAsync(async (req: Request, res: Response) => {
 			merchantInvoiceNumber: data.merchantInvoiceNumber,
 		},
 	});
+
+	if (req.method === "GET") {
+		const redirectUrl = new URL(`${config.frontend_url}/citizen/payments/result`);
+		redirectUrl.searchParams.set("paymentId", data.id);
+		redirectUrl.searchParams.set("status", data.status);
+		if (data.serviceRequestId) {
+			redirectUrl.searchParams.set("requestId", data.serviceRequestId);
+		}
+		return res.redirect(redirectUrl.toString());
+	}
+
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,

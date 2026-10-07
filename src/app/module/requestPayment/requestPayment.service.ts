@@ -70,6 +70,8 @@ const view = (payment: {
 	paymentGateway: string;
 	merchantInvoiceNumber: string;
 	checkoutUrl: string | null;
+	serviceRequestId?: string | null;
+	invoiceUrl?: string | null;
 	initiatedAt: Date | null;
 	completedAt: Date | null;
 	failedAt: Date | null;
@@ -319,14 +321,18 @@ const reconcile = async (
 		publishPaymentOutcome(result.recipientId, result.payment.id, outcomeStatus);
 	}
 
-	// Generate invoice PDF after payment is completed (fire-and-forget)
+	// Generate invoice PDF synchronously so invoice is immediately available without delay
 	if (result.payment.status === PaymentStatus.COMPLETED) {
-		void invoiceServices
-			.generateAndPersistInvoice(result.payment.id)
-			.then(() => invoiceServices.emailInvoice(result.payment.id))
-			.catch((error) => {
-				console.error("Invoice generation/email failed:", error);
-			});
+		try {
+			const invoiceResult = await invoiceServices.generateAndPersistInvoice(
+				result.payment.id,
+			);
+			result.payment.invoiceUrl = invoiceResult.invoiceUrl;
+			result.payment.invoicePublicId = invoiceResult.invoicePublicId;
+			void invoiceServices.emailInvoice(result.payment.id);
+		} catch (error) {
+			console.error("Invoice generation/email failed:", error);
+		}
 	}
 
 	return view(result.payment);

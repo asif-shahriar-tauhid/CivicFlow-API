@@ -48,7 +48,16 @@ const requestSelect = {
 	createdAt: true,
 	updatedAt: true,
 	citizen: { select: { id: true, name: true, email: true, userId: true } },
-	category: { select: { id: true, name: true, description: true } },
+	category: {
+		select: {
+			id: true,
+			name: true,
+			description: true,
+			feeAmount: true,
+			feeCurrency: true,
+			slaMinutes: true,
+		},
+	},
 	createdBy: { select: { id: true, name: true, email: true, role: true } },
 	assignedTo: {
 		select: {
@@ -93,6 +102,25 @@ const requestSelect = {
 	resolutions: {
 		orderBy: { createdAt: "asc" },
 		select: { id: true, reason: true, actorId: true, createdAt: true },
+	},
+	payments: {
+		orderBy: { createdAt: "desc" },
+		select: {
+			id: true,
+			status: true,
+			amount: true,
+			currency: true,
+			merchantInvoiceNumber: true,
+			checkoutUrl: true,
+			bkashTrxId: true,
+			invoiceUrl: true,
+			invoicePublicId: true,
+			completedAt: true,
+			failedAt: true,
+			cancelledAt: true,
+			createdAt: true,
+			updatedAt: true,
+		},
 	},
 } satisfies Prisma.ServiceRequestSelect;
 
