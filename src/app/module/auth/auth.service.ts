@@ -589,6 +589,68 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
 	});
 };
 
+const resendOtp = async (email: string) => {
+	const normalizedEmail = email.trim().toLowerCase();
+
+	const existingUser = await prisma.user.findUnique({
+		where: { email: normalizedEmail },
+	});
+	if (existingUser?.emailVerified) {
+		throw new AppError(httpStatus.CONFLICT, "Email already verified.");
+	}
+
+	const userRegistrationKey = `user-registration-data:${normalizedEmail}`;
+	const redisUserData = await redisClient.get(userRegistrationKey);
+	if (!redisUserData) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Registration session expired. Please register again.",
+		);
+	}
+
+	const userPayload = JSON.parse(redisUserData) as IRegisterUserPayload;
+
+	const otpKey = `registration:${normalizedEmail}`;
+	const otpValue = crypto.randomInt(100000, 1000000).toString();
+	await redisClient.set(otpKey, otpValue, {
+		expiration: {
+			type: "EX",
+			value: OTP_EXPIRY_SECONDS,
+		},
+	});
+
+	await redisClient.set(
+		userRegistrationKey,
+		redisUserData,
+		{
+			expiration: {
+				type: "EX",
+				value: OTP_EXPIRY_SECONDS,
+			},
+		},
+	);
+
+	const templatePath = path.join(
+		process.cwd(),
+		"src/app/templates/registrationOTP.ejs",
+	);
+
+	const emailHTML = await ejs.renderFile(templatePath, {
+		otpValue,
+		APP_NAME: "CivicFlow",
+		USER_NAME: userPayload.name,
+		EXPIRY_MINUTES: OTP_EXPIRY_SECONDS / 60,
+		CURRENT_YEAR: new Date().getFullYear(),
+	});
+
+	await transporter.sendMail({
+		from: config.email_sender,
+		to: email,
+		subject: "Email Verification OTP.",
+		html: emailHTML,
+	});
+};
+
 export const AuthService = {
 	registerUser,
 	verifyEmail,
@@ -598,4 +660,5 @@ export const AuthService = {
 	googleLogin,
 	forgotPassword,
 	resetPassword,
+	resendOtp,
 };

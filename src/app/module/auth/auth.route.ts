@@ -40,4 +40,10 @@ router.post(
 	AuthController.resetPassword,
 );
 
+router.post(
+	"/resend-otp",
+	validateRequest(AuthValidation.forgotPasswordZodSchema),
+	AuthController.resendOtp,
+);
+
 export const AuthRoutes = router;
