@@ -13,6 +13,11 @@ router.post(
 	requestPaymentController.initiate,
 );
 router.get(
+	"/requests/:requestId/status",
+	auth(Role.ADMIN, Role.STAFF, Role.CITIZEN),
+	requestPaymentController.status,
+);
+router.get(
 	"/:paymentId/status",
 	auth(Role.ADMIN, Role.STAFF, Role.CITIZEN),
 	requestPaymentController.status,

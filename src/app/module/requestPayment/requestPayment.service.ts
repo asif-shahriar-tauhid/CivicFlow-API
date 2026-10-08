@@ -26,12 +26,13 @@ type ProviderPayment = {
 };
 
 export const moneyInMinorUnits = (value: string | number) => {
-	const normalized = String(value).trim();
-	if (!/^\d+(\.\d{1,2})?$/.test(normalized)) {
+	const num = Number(value);
+	if (isNaN(num) || num < 0) {
 		throw new AppError(httpStatus.BAD_REQUEST, "Invalid payment amount.");
 	}
-	const [whole, fraction = ""] = normalized.split(".");
-	return BigInt(whole) * 100n + BigInt(fraction.padEnd(2, "0"));
+	const normalized = num.toFixed(2);
+	const [whole, fraction = "00"] = normalized.split(".");
+	return BigInt(whole) * 100n + BigInt(fraction.slice(0, 2));
 };
 
 export const amountsMatch = (
@@ -83,9 +84,16 @@ const view = (payment: {
 	amount: payment.amount.toString(),
 });
 
-const getRequestPayment = async (paymentId: string, user: RequestUser) => {
-	const payment = await prisma.payment.findUnique({
-		where: { id: paymentId },
+const getRequestPayment = async (targetId: string, user: RequestUser) => {
+	const payment = await prisma.payment.findFirst({
+		where: {
+			OR: [
+				{ id: targetId },
+				{ serviceRequestId: targetId },
+				{ bkashPaymentId: targetId },
+			],
+		},
+		orderBy: { createdAt: "desc" },
 		include: {
 			serviceRequest: { select: { citizen: { select: { userId: true } } } },
 		},
@@ -130,7 +138,9 @@ const initiate = async (requestId: string, user: RequestUser) => {
 		if (!existing) throw error;
 		return view(existing);
 	}
-	if (draft.existing) return view(draft.payment);
+	if (draft.existing && draft.payment.checkoutUrl && draft.payment.status === PaymentStatus.PENDING) {
+		return view(draft.payment);
+	}
 
 	try {
 		const provider = await createBkashPayment({
@@ -144,20 +154,11 @@ const initiate = async (requestId: string, user: RequestUser) => {
 			const current = await tx.payment.findUniqueOrThrow({
 				where: { id: draft.payment.id },
 			});
-			if (
-				current.bkashPaymentId &&
-				current.bkashPaymentId !== provider.paymentID
-			) {
-				throw new AppError(
-					httpStatus.CONFLICT,
-					"Payment provider identifier mismatch.",
-				);
-			}
 			return tx.payment.update({
 				where: { id: current.id },
 				data: {
 					status: PaymentStatus.PENDING,
-					bkashPaymentId: current.bkashPaymentId || provider.paymentID,
+					bkashPaymentId: provider.paymentID,
 					checkoutUrl: provider.bkashURL,
 					initiatedAt: current.initiatedAt || new Date(),
 				},
@@ -210,6 +211,20 @@ const createDraft = async (requestId: string, userId: string) =>
 				"This service request category is free or unavailable.",
 			);
 		}
+
+		const completed = await tx.payment.findFirst({
+			where: {
+				serviceRequestId: requestId,
+				status: PaymentStatus.COMPLETED,
+			},
+		});
+		if (completed) {
+			throw new AppError(
+				httpStatus.BAD_REQUEST,
+				"This service request fee has already been settled.",
+			);
+		}
+
 		const existing = await tx.payment.findFirst({
 			where: {
 				serviceRequestId: requestId,
@@ -273,7 +288,8 @@ const reconcile = async (
 				!provider.currency ||
 				!provider.trxID ||
 				!amountsMatch(payment.amount.toString(), provider.amount) ||
-				provider.currency !== payment.currency
+				provider.currency.trim().toUpperCase() !==
+					payment.currency.trim().toUpperCase()
 			) {
 				throw new AppError(
 					httpStatus.BAD_REQUEST,
@@ -300,7 +316,14 @@ const reconcile = async (
 			data: {
 				status,
 				bkashTrxId: provider.trxID || payment.bkashTrxId,
-				completedAt: status === PaymentStatus.COMPLETED ? new Date() : null,
+				paidAt:
+					status === PaymentStatus.COMPLETED
+						? new Date().toISOString()
+						: payment.paidAt,
+				completedAt:
+					status === PaymentStatus.COMPLETED
+						? payment.completedAt || new Date()
+						: null,
 				failedAt: status === PaymentStatus.FAILED ? new Date() : null,
 				cancelledAt: status === PaymentStatus.CANCELLED ? new Date() : null,
 			},
@@ -321,18 +344,16 @@ const reconcile = async (
 		publishPaymentOutcome(result.recipientId, result.payment.id, outcomeStatus);
 	}
 
-	// Generate invoice PDF synchronously so invoice is immediately available without delay
+	// Generate invoice asynchronously in background so redirect to UI returns immediately (< 200ms)
 	if (result.payment.status === PaymentStatus.COMPLETED) {
-		try {
-			const invoiceResult = await invoiceServices.generateAndPersistInvoice(
-				result.payment.id,
-			);
-			result.payment.invoiceUrl = invoiceResult.invoiceUrl;
-			result.payment.invoicePublicId = invoiceResult.invoicePublicId;
-			void invoiceServices.emailInvoice(result.payment.id);
-		} catch (error) {
-			console.error("Invoice generation/email failed:", error);
-		}
+		void (async () => {
+			try {
+				await invoiceServices.generateAndPersistInvoice(result.payment.id);
+				await invoiceServices.emailInvoice(result.payment.id);
+			} catch (error) {
+				console.error("Background invoice generation/email failed:", error);
+			}
+		})();
 	}
 
 	return view(result.payment);
@@ -344,7 +365,9 @@ const handleCallback = async (
 ) => {
 	const payment = await prisma.payment.findFirst({
 		where: { bkashPaymentId: paymentId, serviceRequestId: { not: null } },
-		select: { id: true, status: true },
+		include: {
+			serviceRequest: { select: { citizen: { select: { userId: true } } } },
+		},
 	});
 	if (!payment)
 		throw new AppError(httpStatus.NOT_FOUND, "Request payment not found.");
@@ -354,8 +377,56 @@ const handleCallback = async (
 		});
 		return view(completed);
 	}
-	if (callbackResult === "success") await executeBkashPayment(paymentId);
-	const provider = await queryBkashPayment(paymentId);
+
+	if (callbackResult === "cancel") {
+		const cancelled = await prisma.payment.update({
+			where: { id: payment.id },
+			data: {
+				status: PaymentStatus.CANCELLED,
+				cancelledAt: new Date(),
+			},
+		});
+		if (payment.serviceRequest?.citizen?.userId) {
+			publishPaymentOutcome(
+				payment.serviceRequest.citizen.userId,
+				payment.id,
+				PaymentStatus.FAILED,
+			);
+		}
+		return view(cancelled);
+	}
+
+	if (callbackResult === "failure") {
+		const failed = await prisma.payment.update({
+			where: { id: payment.id },
+			data: {
+				status: PaymentStatus.FAILED,
+				failedAt: new Date(),
+			},
+		});
+		if (payment.serviceRequest?.citizen?.userId) {
+			publishPaymentOutcome(
+				payment.serviceRequest.citizen.userId,
+				payment.id,
+				PaymentStatus.FAILED,
+			);
+		}
+		return view(failed);
+	}
+
+	let provider: ProviderPayment | null = null;
+	if (callbackResult === "success") {
+		try {
+			provider = await executeBkashPayment(paymentId);
+		} catch (error) {
+			console.error("Execute payment error:", error);
+		}
+	}
+
+	if (!provider || !provider.transactionStatus) {
+		provider = await queryBkashPayment(paymentId);
+	}
+
 	return reconcile(payment.id, provider, callbackResult);
 };
 
