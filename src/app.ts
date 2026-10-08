@@ -1,3 +1,8 @@
+import { Role } from "./generated/prisma/enums";
+import { auth } from "./app/middleware/checkAuth";
+import { validateRequest } from "./app/middleware/validateRequest";
+import { departmentController } from "./app/module/department/department.controller";
+import { DepartmentValidation } from "./app/module/department/department.validation";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { type Application } from "express";
@@ -63,6 +68,15 @@ app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/user", UserRoutes);
 app.use("/api/v1/payment", PaymentRoutes);
 app.use("/api/v1/departments", DepartmentRoutes);
+
+const staffRouter = express.Router();
+staffRouter.patch(
+	"/:userId/department",
+	auth(Role.ADMIN),
+	validateRequest(DepartmentValidation.assignStaffDepartmentSchema),
+	departmentController.assignStaffDepartment,
+);
+app.use("/api/v1/staff", staffRouter);
 app.use("/api/v1/routing-rules", RoutingRuleRoutes);
 app.use("/api/v1/requests", ServiceRequestRoutes);
 app.use("/api/v1/requests", requestFeedbackRoutes);
