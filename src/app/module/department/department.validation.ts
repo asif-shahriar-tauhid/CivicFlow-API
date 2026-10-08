@@ -5,6 +5,12 @@ const createDepartmentSchema = z.object({
 	description: z.string().trim().max(500).optional(),
 });
 
+const updateDepartmentSchema = z.object({
+	name: z.string().trim().min(2).max(120).optional(),
+	description: z.string().trim().max(500).optional(),
+	isActive: z.boolean().optional(),
+});
+
 const createRoutingRuleSchema = z.object({
 	categoryId: z.string().uuid(),
 	departmentId: z.string().uuid(),
@@ -18,6 +24,7 @@ const assignStaffDepartmentSchema = z.object({
 
 export const DepartmentValidation = {
 	createDepartmentSchema,
+	updateDepartmentSchema,
 	createRoutingRuleSchema,
 	assignStaffDepartmentSchema,
 };

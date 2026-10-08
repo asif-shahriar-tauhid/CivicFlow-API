@@ -16,9 +16,20 @@ router.post(
 	departmentController.createDepartment,
 );
 router.patch(
+	"/:departmentId",
+	adminOnly,
+	validateRequest(DepartmentValidation.updateDepartmentSchema),
+	departmentController.updateDepartment,
+);
+router.patch(
 	"/:departmentId/archive",
 	adminOnly,
 	departmentController.archiveDepartment,
+);
+router.patch(
+	"/:departmentId/unarchive",
+	adminOnly,
+	departmentController.unarchiveDepartment,
 );
 router.patch(
 	"/staff/:userId/department",

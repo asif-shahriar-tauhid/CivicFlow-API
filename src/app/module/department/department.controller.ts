@@ -32,6 +32,26 @@ const createDepartment = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const updateDepartment = catchAsync(async (req: Request, res: Response) => {
+	const data = await departmentServices.updateDepartment(
+		req.params.departmentId as string,
+		req.body,
+	);
+	emitAuditLog({
+		...actorFromReq(req),
+		action: "DEPARTMENT_UPDATED",
+		entity: "Department",
+		entityId: req.params.departmentId as string,
+		after: data,
+	});
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Department updated successfully.",
+		data,
+	});
+});
+
 const archiveDepartment = catchAsync(async (req: Request, res: Response) => {
 	const data = await departmentServices.archiveDepartment(
 		req.params.departmentId as string,
@@ -47,6 +67,25 @@ const archiveDepartment = catchAsync(async (req: Request, res: Response) => {
 		statusCode: httpStatus.OK,
 		success: true,
 		message: "Department archived successfully.",
+		data,
+	});
+});
+
+const unarchiveDepartment = catchAsync(async (req: Request, res: Response) => {
+	const data = await departmentServices.unarchiveDepartment(
+		req.params.departmentId as string,
+	);
+	emitAuditLog({
+		...actorFromReq(req),
+		action: "DEPARTMENT_UNARCHIVED",
+		entity: "Department",
+		entityId: req.params.departmentId as string,
+		after: { isArchived: false, isActive: true },
+	});
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Department unarchived successfully.",
 		data,
 	});
 });
@@ -122,7 +161,9 @@ const assignStaffDepartment = catchAsync(
 export const departmentController = {
 	listDepartments,
 	createDepartment,
+	updateDepartment,
 	archiveDepartment,
+	unarchiveDepartment,
 	listRoutingRules,
 	createRoutingRule,
 	archiveRoutingRule,

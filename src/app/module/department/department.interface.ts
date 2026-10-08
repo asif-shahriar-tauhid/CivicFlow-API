@@ -3,6 +3,12 @@ export interface ICreateDepartmentPayload {
 	description?: string;
 }
 
+export interface IUpdateDepartmentPayload {
+	name?: string;
+	description?: string;
+	isActive?: boolean;
+}
+
 export interface ICreateRoutingRulePayload {
 	categoryId: string;
 	departmentId: string;

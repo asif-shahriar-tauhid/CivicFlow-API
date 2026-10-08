@@ -6,6 +6,7 @@ import type {
 	ICreateDepartmentPayload,
 	ICreateRoutingRulePayload,
 	IDepartmentQuery,
+	IUpdateDepartmentPayload,
 } from "./department.interface";
 
 const listDepartments = async (query: IDepartmentQuery) => {
@@ -21,6 +22,23 @@ const listDepartments = async (query: IDepartmentQuery) => {
 
 const createDepartment = async (payload: ICreateDepartmentPayload) =>
 	prisma.department.create({ data: payload });
+
+const updateDepartment = async (
+	departmentId: string,
+	payload: IUpdateDepartmentPayload,
+) => {
+	const department = await prisma.department.findUnique({
+		where: { id: departmentId },
+		select: { id: true, isArchived: true },
+	});
+	if (!department || department.isArchived) {
+		throw new AppError(httpStatus.NOT_FOUND, "Department not found.");
+	}
+	return prisma.department.update({
+		where: { id: departmentId },
+		data: payload,
+	});
+};
 
 const archiveDepartment = async (departmentId: string) => {
 	const department = await prisma.department.findUnique({
@@ -40,6 +58,21 @@ const archiveDepartment = async (departmentId: string) => {
 			where: { id: departmentId },
 			data: { isArchived: true, isActive: false, archivedAt: new Date() },
 		});
+	});
+};
+
+const unarchiveDepartment = async (departmentId: string) => {
+	const department = await prisma.department.findUnique({
+		where: { id: departmentId },
+		select: { id: true, isArchived: true },
+	});
+	if (!department) {
+		throw new AppError(httpStatus.NOT_FOUND, "Department not found.");
+	}
+
+	return prisma.department.update({
+		where: { id: departmentId },
+		data: { isArchived: false, isActive: true, archivedAt: null },
 	});
 };
 
@@ -145,7 +178,9 @@ const assignStaffDepartment = async (
 export const departmentServices = {
 	listDepartments,
 	createDepartment,
+	updateDepartment,
 	archiveDepartment,
+	unarchiveDepartment,
 	listRoutingRules,
 	createRoutingRule,
 	archiveRoutingRule,
