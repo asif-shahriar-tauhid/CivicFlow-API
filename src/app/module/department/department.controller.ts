@@ -90,6 +90,16 @@ const unarchiveDepartment = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const listCategories = catchAsync(async (req: Request, res: Response) => {
+	const data = await departmentServices.listCategories();
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Categories retrieved successfully.",
+		data,
+	});
+});
+
 const listRoutingRules = catchAsync(async (req: Request, res: Response) => {
 	const data = await departmentServices.listRoutingRules(req.query);
 	sendResponse(res, {
@@ -117,6 +127,26 @@ const createRoutingRule = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const updateRoutingRule = catchAsync(async (req: Request, res: Response) => {
+	const data = await departmentServices.updateRoutingRule(
+		req.params.ruleId as string,
+		req.body,
+	);
+	emitAuditLog({
+		...actorFromReq(req),
+		action: "ROUTING_RULE_UPDATED",
+		entity: "CategoryRoutingRule",
+		entityId: req.params.ruleId as string,
+		after: data,
+	});
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Routing rule updated successfully.",
+		data,
+	});
+});
+
 const archiveRoutingRule = catchAsync(async (req: Request, res: Response) => {
 	const data = await departmentServices.archiveRoutingRule(
 		req.params.ruleId as string,
@@ -132,6 +162,25 @@ const archiveRoutingRule = catchAsync(async (req: Request, res: Response) => {
 		statusCode: httpStatus.OK,
 		success: true,
 		message: "Routing rule archived successfully.",
+		data,
+	});
+});
+
+const unarchiveRoutingRule = catchAsync(async (req: Request, res: Response) => {
+	const data = await departmentServices.unarchiveRoutingRule(
+		req.params.ruleId as string,
+	);
+	emitAuditLog({
+		...actorFromReq(req),
+		action: "ROUTING_RULE_UNARCHIVED",
+		entity: "CategoryRoutingRule",
+		entityId: req.params.ruleId as string,
+		after: { isArchived: false, isActive: true },
+	});
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Routing rule unarchived successfully.",
 		data,
 	});
 });
@@ -164,8 +213,11 @@ export const departmentController = {
 	updateDepartment,
 	archiveDepartment,
 	unarchiveDepartment,
+	listCategories,
 	listRoutingRules,
 	createRoutingRule,
+	updateRoutingRule,
 	archiveRoutingRule,
+	unarchiveRoutingRule,
 	assignStaffDepartment,
 };

@@ -18,6 +18,14 @@ const createRoutingRuleSchema = z.object({
 	priority: z.number().int().min(0).max(100).optional(),
 });
 
+const updateRoutingRuleSchema = z.object({
+	categoryId: z.string().uuid().optional(),
+	departmentId: z.string().uuid().optional(),
+	location: z.string().trim().max(500).nullable().optional(),
+	priority: z.number().int().min(0).max(100).optional(),
+	isActive: z.boolean().optional(),
+});
+
 const assignStaffDepartmentSchema = z.object({
 	departmentId: z.string().uuid().nullable(),
 });
@@ -26,5 +34,6 @@ export const DepartmentValidation = {
 	createDepartmentSchema,
 	updateDepartmentSchema,
 	createRoutingRuleSchema,
+	updateRoutingRuleSchema,
 	assignStaffDepartmentSchema,
 };

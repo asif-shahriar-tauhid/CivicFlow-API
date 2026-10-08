@@ -7,6 +7,7 @@ import type {
 	ICreateRoutingRulePayload,
 	IDepartmentQuery,
 	IUpdateDepartmentPayload,
+	IUpdateRoutingRulePayload,
 } from "./department.interface";
 
 const listDepartments = async (query: IDepartmentQuery) => {
@@ -76,6 +77,12 @@ const unarchiveDepartment = async (departmentId: string) => {
 	});
 };
 
+const listCategories = async () =>
+	prisma.requestCategory.findMany({
+		where: { isActive: true },
+		orderBy: { name: "asc" },
+	});
+
 const listRoutingRules = async (query: IDepartmentQuery) =>
 	prisma.categoryRoutingRule.findMany({
 		where: query.includeArchived === "true" ? undefined : { isArchived: false },
@@ -124,6 +131,57 @@ const createRoutingRule = async (payload: ICreateRoutingRulePayload) => {
 	});
 };
 
+const updateRoutingRule = async (
+	ruleId: string,
+	payload: IUpdateRoutingRulePayload,
+) => {
+	const rule = await prisma.categoryRoutingRule.findUnique({
+		where: { id: ruleId },
+		select: { id: true, isArchived: true },
+	});
+	if (!rule || rule.isArchived) {
+		throw new AppError(httpStatus.NOT_FOUND, "Routing rule not found.");
+	}
+
+	if (payload.categoryId) {
+		const category = await prisma.requestCategory.findUnique({
+			where: { id: payload.categoryId },
+			select: { id: true, isActive: true },
+		});
+		if (!category?.isActive) {
+			throw new AppError(
+				httpStatus.BAD_REQUEST,
+				"The request category is inactive or missing.",
+			);
+		}
+	}
+
+	if (payload.departmentId) {
+		const department = await prisma.department.findUnique({
+			where: { id: payload.departmentId },
+			select: { id: true, isActive: true, isArchived: true },
+		});
+		if (!department?.isActive || department.isArchived) {
+			throw new AppError(
+				httpStatus.BAD_REQUEST,
+				"The department is inactive or archived.",
+			);
+		}
+	}
+
+	return prisma.categoryRoutingRule.update({
+		where: { id: ruleId },
+		data: {
+			...payload,
+			location: payload.location !== undefined ? payload.location : undefined,
+		},
+		include: {
+			category: { select: { id: true, name: true } },
+			department: { select: { id: true, name: true } },
+		},
+	});
+};
+
 const archiveRoutingRule = async (ruleId: string) => {
 	const rule = await prisma.categoryRoutingRule.findUnique({
 		where: { id: ruleId },
@@ -135,6 +193,24 @@ const archiveRoutingRule = async (ruleId: string) => {
 	return prisma.categoryRoutingRule.update({
 		where: { id: ruleId },
 		data: { isArchived: true, isActive: false, archivedAt: new Date() },
+	});
+};
+
+const unarchiveRoutingRule = async (ruleId: string) => {
+	const rule = await prisma.categoryRoutingRule.findUnique({
+		where: { id: ruleId },
+		select: { id: true },
+	});
+	if (!rule) {
+		throw new AppError(httpStatus.NOT_FOUND, "Routing rule not found.");
+	}
+	return prisma.categoryRoutingRule.update({
+		where: { id: ruleId },
+		data: { isArchived: false, isActive: true, archivedAt: null },
+		include: {
+			category: { select: { id: true, name: true } },
+			department: { select: { id: true, name: true } },
+		},
 	});
 };
 
@@ -181,8 +257,11 @@ export const departmentServices = {
 	updateDepartment,
 	archiveDepartment,
 	unarchiveDepartment,
+	listCategories,
 	listRoutingRules,
 	createRoutingRule,
+	updateRoutingRule,
 	archiveRoutingRule,
+	unarchiveRoutingRule,
 	assignStaffDepartment,
 };

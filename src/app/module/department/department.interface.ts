@@ -16,6 +16,14 @@ export interface ICreateRoutingRulePayload {
 	priority?: number;
 }
 
+export interface IUpdateRoutingRulePayload {
+	categoryId?: string;
+	departmentId?: string;
+	location?: string | null;
+	priority?: number;
+	isActive?: boolean;
+}
+
 export interface IDepartmentQuery {
 	includeArchived?: string;
 }

@@ -6,7 +6,10 @@ import config from "./app/config";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import { notFound } from "./app/middleware/notFound";
 import { AuthRoutes } from "./app/module/auth/auth.route";
-import { DepartmentRoutes } from "./app/module/department/department.route";
+import {
+	DepartmentRoutes,
+	RoutingRuleRoutes,
+} from "./app/module/department/department.route";
 import { PaymentRoutes } from "./app/module/payment/payment.route";
 import { ServiceRequestRoutes } from "./app/module/serviceRequest/serviceRequest.route";
 import { SlaRoutes } from "./app/module/sla/sla.route";
@@ -60,6 +63,7 @@ app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/user", UserRoutes);
 app.use("/api/v1/payment", PaymentRoutes);
 app.use("/api/v1/departments", DepartmentRoutes);
+app.use("/api/v1/routing-rules", RoutingRuleRoutes);
 app.use("/api/v1/requests", ServiceRequestRoutes);
 app.use("/api/v1/requests", requestFeedbackRoutes);
 app.use("/api/v1/request-feedback", requestFeedbackReportRoutes);
