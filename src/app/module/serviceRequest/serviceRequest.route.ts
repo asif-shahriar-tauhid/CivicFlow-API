@@ -65,7 +65,7 @@ router.post(
 );
 router.post(
 	"/:requestId/resolve",
-	auth(Role.ADMIN, Role.STAFF),
+	auth(Role.ADMIN),
 	validateRequest(ServiceRequestValidation.resolutionSchema),
 	serviceRequestController.resolveServiceRequest,
 );
@@ -92,13 +92,13 @@ router.post(
 );
 router.post(
 	"/:requestId/assign",
-	auth(Role.ADMIN, Role.STAFF),
+	auth(Role.ADMIN),
 	validateRequest(ServiceRequestValidation.assignmentSchema),
 	serviceRequestController.assignServiceRequest,
 );
 router.post(
 	"/:requestId/reassign",
-	auth(Role.ADMIN, Role.STAFF),
+	auth(Role.ADMIN),
 	validateRequest(ServiceRequestValidation.assignmentSchema),
 	serviceRequestController.reassignServiceRequest,
 );

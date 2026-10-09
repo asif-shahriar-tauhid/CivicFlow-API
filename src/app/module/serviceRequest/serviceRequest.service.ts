@@ -623,18 +623,12 @@ const assignRequest = async (
 				httpStatus.BAD_REQUEST,
 				"Request must belong to a department before assignment.",
 			);
-		const actor = await tx.user.findUnique({
-			where: { id: user.userId },
-			select: { departmentId: true },
-		});
-		if (
-			user.role === Role.STAFF &&
-			actor?.departmentId !== request.departmentId
-		)
+		if (user.role !== Role.ADMIN) {
 			throw new AppError(
 				httpStatus.FORBIDDEN,
-				"You cannot assign requests outside your department.",
+				"Only municipal administrators are authorized to assign or reassign service requests.",
 			);
+		}
 		const assignee = await tx.user.findFirst({
 			where: {
 				id: payload.assignedToId,

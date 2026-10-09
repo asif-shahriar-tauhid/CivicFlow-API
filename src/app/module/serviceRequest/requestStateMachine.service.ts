@@ -44,6 +44,9 @@ export const canTransition = (
 	user: IRequestUser,
 ) => {
 	if (!isValidTransition(request.status, to)) return false;
+	if (to === RequestStatus.RESOLVED) {
+		return user.role === Role.ADMIN;
+	}
 	if (user.role === Role.ADMIN) return true;
 	if (user.role === Role.CITIZEN) {
 		return (
@@ -277,6 +280,12 @@ const resolve = async (
 	reason: string,
 	user: IRequestUser,
 ) => {
+	if (user.role !== Role.ADMIN) {
+		throw new AppError(
+			httpStatus.FORBIDDEN,
+			"Only municipal administrators are authorized to resolve service requests.",
+		);
+	}
 	const result = await prisma.$transaction(async (tx) => {
 		const request = await loadRequest(tx, requestId);
 		assertTransition(request, RequestStatus.RESOLVED, user);
