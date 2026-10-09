@@ -29,7 +29,31 @@ import { AuditLogRoutes } from "./app/module/auditLog/auditLog.route";
 import { DashboardRoutes } from "./app/module/dashboard/dashboard.route";
 
 const app: Application = express();
-app.use(cors({ origin: config.frontend_url, credentials: true }));
+const allowedOrigins = [
+	"http://localhost:3000",
+	"http://127.0.0.1:3000",
+	"https://civic-flow-frontend-psi.vercel.app",
+	...(config.frontend_url
+		? config.frontend_url.split(",").map((s) => s.trim())
+		: []),
+];
+
+app.use(
+	cors({
+		origin: (origin, callback) => {
+			if (!origin) return callback(null, true);
+			const isAllowed =
+				allowedOrigins.includes(origin) ||
+				origin.endsWith(".vercel.app") ||
+				origin.includes("civic-flow-frontend");
+			if (isAllowed) {
+				return callback(null, true);
+			}
+			return callback(new Error(`Origin ${origin} not allowed by CORS`));
+		},
+		credentials: true,
+	}),
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());

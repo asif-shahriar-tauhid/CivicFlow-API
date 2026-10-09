@@ -1,11 +1,17 @@
 import type { Response } from "express";
 
+const isProduction =
+	process.env.NODE_ENV === "production" ||
+	process.env.VERCEL === "1" ||
+	Boolean(process.env.VERCEL_ENV) ||
+	Boolean(process.env.BACKEND_URL?.startsWith("https"));
+
 export const setAuthCookies = (
 	res: Response,
 	accessToken: string,
 	refreshToken: string,
 ) => {
-	const secure = process.env.NODE_ENV === "production";
+	const secure = isProduction;
 	res.cookie("accessToken", accessToken, {
 		httpOnly: true,
 		secure,
@@ -21,7 +27,7 @@ export const setAuthCookies = (
 };
 
 export const clearAuthCookies = (res: Response) => {
-	const secure = process.env.NODE_ENV === "production";
+	const secure = isProduction;
 	res.clearCookie("accessToken", {
 		httpOnly: true,
 		secure,
