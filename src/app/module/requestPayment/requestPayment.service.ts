@@ -138,7 +138,11 @@ const initiate = async (requestId: string, user: RequestUser) => {
 		if (!existing) throw error;
 		return view(existing);
 	}
-	if (draft.existing && draft.payment.checkoutUrl && draft.payment.status === PaymentStatus.PENDING) {
+	if (
+		draft.existing &&
+		draft.payment.checkoutUrl &&
+		draft.payment.status === PaymentStatus.PENDING
+	) {
 		return view(draft.payment);
 	}
 

@@ -137,11 +137,17 @@ const listMine = async (userId: string, page = 1, limit = 20) => {
 	};
 };
 
-const markRead = async (notificationId: string, userId: string) =>
-	prisma.notification.updateMany({
-		where: { id: notificationId, recipientId: userId, readAt: null },
+const markRead = async (notificationId: string, userId: string) => {
+	const where =
+		notificationId === "all"
+			? { recipientId: userId, readAt: null }
+			: { id: notificationId, recipientId: userId, readAt: null };
+
+	return prisma.notification.updateMany({
+		where,
 		data: { readAt: new Date() },
 	});
+};
 
 const unreadCount = (userId: string) =>
 	prisma.notification.count({ where: { recipientId: userId, readAt: null } });

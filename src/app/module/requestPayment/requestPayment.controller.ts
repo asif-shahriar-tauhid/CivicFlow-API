@@ -86,10 +86,7 @@ const callback = catchAsync(async (req: Request, res: Response) => {
 			);
 		}
 
-		const data = await requestPaymentServices.handleCallback(
-			paymentId,
-			result,
-		);
+		const data = await requestPaymentServices.handleCallback(paymentId, result);
 
 		emitAuditLog({
 			actorId: req.user?.userId ?? null,

@@ -66,7 +66,7 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
 
 const logoutUser = catchAsync(async (req: Request, res: Response) => {
 	clearAuthCookies(res);
-	
+
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,

@@ -619,16 +619,12 @@ const resendOtp = async (email: string) => {
 		},
 	});
 
-	await redisClient.set(
-		userRegistrationKey,
-		redisUserData,
-		{
-			expiration: {
-				type: "EX",
-				value: OTP_EXPIRY_SECONDS,
-			},
+	await redisClient.set(userRegistrationKey, redisUserData, {
+		expiration: {
+			type: "EX",
+			value: OTP_EXPIRY_SECONDS,
 		},
-	);
+	});
 
 	const templatePath = path.join(
 		process.cwd(),
