@@ -22,10 +22,78 @@ const callbackResult = (value: string): CallbackResult => {
 	return value;
 };
 
+const isAllowedOrigin = (urlStr: string): boolean => {
+	try {
+		const parsed = new URL(urlStr);
+		const origin = parsed.origin;
+		const allowedOrigins = [
+			"http://localhost:3000",
+			"http://127.0.0.1:3000",
+			"https://civic-flow-frontend-psi.vercel.app",
+			...(config.frontend_url
+				? config.frontend_url.split(",").map((s) => s.trim())
+				: []),
+			...(process.env.FRONTEND_URL
+				? process.env.FRONTEND_URL.split(",").map((s) => s.trim())
+				: []),
+		];
+		return (
+			allowedOrigins.includes(origin) ||
+			origin.endsWith(".vercel.app") ||
+			origin.includes("civic-flow-frontend")
+		);
+	} catch {
+		return false;
+	}
+};
+
+const resolveRedirectFrontendUrl = (savedGatewayResponse?: unknown): string => {
+	if (
+		savedGatewayResponse &&
+		typeof savedGatewayResponse === "object" &&
+		savedGatewayResponse !== null
+	) {
+		const saved = (savedGatewayResponse as Record<string, unknown>).frontendUrl;
+		if (typeof saved === "string" && isAllowedOrigin(saved)) {
+			try {
+				return new URL(saved).origin;
+			} catch {
+				// ignore invalid URL
+			}
+		}
+	}
+	return config.frontend_url;
+};
+
 const initiate = catchAsync(async (req: Request, res: Response) => {
+	const originHeader = (req.headers.origin || req.headers.referer) as
+		| string
+		| undefined;
+	let clientOrigin: string | undefined;
+	if (originHeader) {
+		try {
+			const candidate = new URL(originHeader).origin;
+			if (isAllowedOrigin(candidate)) {
+				clientOrigin = candidate;
+			}
+		} catch {
+			// ignore invalid URL
+		}
+	}
+	const candidateBody =
+		(req.body?.frontendUrl as string) || (req.query?.frontendUrl as string);
+	if (candidateBody && isAllowedOrigin(candidateBody)) {
+		try {
+			clientOrigin = new URL(candidateBody).origin;
+		} catch {
+			// ignore invalid URL
+		}
+	}
+
 	const data = await requestPaymentServices.initiate(
 		req.params.requestId as string,
 		currentUser(req),
+		clientOrigin,
 	);
 	emitAuditLog({
 		...actorFromReq(req),
@@ -104,9 +172,14 @@ const callback = catchAsync(async (req: Request, res: Response) => {
 		});
 
 		if (req.method === "GET") {
-			const redirectUrl = new URL(
-				`${config.frontend_url}/citizen/payments/result`,
+			const payment = await prisma.payment.findUnique({
+				where: { id: data.id },
+				select: { gatewayResponse: true },
+			});
+			const baseFrontendUrl = resolveRedirectFrontendUrl(
+				payment?.gatewayResponse,
 			);
+			const redirectUrl = new URL(`${baseFrontendUrl}/citizen/payments/result`);
 			redirectUrl.searchParams.set("paymentId", data.id);
 			redirectUrl.searchParams.set("status", data.status);
 			if (data.serviceRequestId) {
@@ -125,20 +198,36 @@ const callback = catchAsync(async (req: Request, res: Response) => {
 		console.error("Callback reconciliation error:", error);
 		if (req.method === "GET") {
 			// Always redirect to frontend UI result page on browser callback, even on gateway errors
-			const redirectUrl = new URL(
-				`${config.frontend_url}/citizen/payments/result`,
-			);
+			let baseFrontendUrl = resolveRedirectFrontendUrl();
+			let paymentRecord: {
+				id: string;
+				serviceRequestId: string | null;
+				status: string;
+			} | null = null;
 			if (paymentId) {
 				const payment = await prisma.payment.findFirst({
 					where: { bkashPaymentId: paymentId },
-					select: { id: true, serviceRequestId: true, status: true },
+					select: {
+						id: true,
+						serviceRequestId: true,
+						status: true,
+						gatewayResponse: true,
+					},
 				});
 				if (payment) {
-					redirectUrl.searchParams.set("paymentId", payment.id);
-					redirectUrl.searchParams.set("status", payment.status);
-					if (payment.serviceRequestId) {
-						redirectUrl.searchParams.set("requestId", payment.serviceRequestId);
-					}
+					baseFrontendUrl = resolveRedirectFrontendUrl(payment.gatewayResponse);
+					paymentRecord = payment;
+				}
+			}
+			const redirectUrl = new URL(`${baseFrontendUrl}/citizen/payments/result`);
+			if (paymentRecord) {
+				redirectUrl.searchParams.set("paymentId", paymentRecord.id);
+				redirectUrl.searchParams.set("status", paymentRecord.status);
+				if (paymentRecord.serviceRequestId) {
+					redirectUrl.searchParams.set(
+						"requestId",
+						paymentRecord.serviceRequestId,
+					);
 				}
 			}
 			if (!redirectUrl.searchParams.has("status")) {

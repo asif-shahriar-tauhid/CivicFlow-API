@@ -116,7 +116,11 @@ const getRequestPayment = async (targetId: string, user: RequestUser) => {
 	return view(payment);
 };
 
-const initiate = async (requestId: string, user: RequestUser) => {
+const initiate = async (
+	requestId: string,
+	user: RequestUser,
+	frontendUrl?: string,
+) => {
 	if (user.role !== Role.CITIZEN) {
 		throw new AppError(
 			httpStatus.FORBIDDEN,
@@ -126,7 +130,7 @@ const initiate = async (requestId: string, user: RequestUser) => {
 
 	let draft: Awaited<ReturnType<typeof createDraft>>;
 	try {
-		draft = await createDraft(requestId, user.userId);
+		draft = await createDraft(requestId, user.userId, frontendUrl);
 	} catch (error) {
 		if ((error as { code?: string }).code !== "P2002") throw error;
 		const existing = await prisma.payment.findFirst({
@@ -136,6 +140,22 @@ const initiate = async (requestId: string, user: RequestUser) => {
 			},
 		});
 		if (!existing) throw error;
+		if (frontendUrl) {
+			const existingGatewayResponse =
+				typeof existing.gatewayResponse === "object" &&
+				existing.gatewayResponse !== null
+					? (existing.gatewayResponse as Record<string, unknown>)
+					: {};
+			await prisma.payment.update({
+				where: { id: existing.id },
+				data: {
+					gatewayResponse: {
+						...existingGatewayResponse,
+						frontendUrl,
+					},
+				},
+			});
+		}
 		return view(existing);
 	}
 	if (
@@ -143,6 +163,22 @@ const initiate = async (requestId: string, user: RequestUser) => {
 		draft.payment.checkoutUrl &&
 		draft.payment.status === PaymentStatus.PENDING
 	) {
+		if (frontendUrl) {
+			const existingGatewayResponse =
+				typeof draft.payment.gatewayResponse === "object" &&
+				draft.payment.gatewayResponse !== null
+					? (draft.payment.gatewayResponse as Record<string, unknown>)
+					: {};
+			await prisma.payment.update({
+				where: { id: draft.payment.id },
+				data: {
+					gatewayResponse: {
+						...existingGatewayResponse,
+						frontendUrl,
+					},
+				},
+			});
+		}
 		return view(draft.payment);
 	}
 
@@ -158,6 +194,11 @@ const initiate = async (requestId: string, user: RequestUser) => {
 			const current = await tx.payment.findUniqueOrThrow({
 				where: { id: draft.payment.id },
 			});
+			const existingGatewayResponse =
+				typeof current.gatewayResponse === "object" &&
+				current.gatewayResponse !== null
+					? (current.gatewayResponse as Record<string, unknown>)
+					: {};
 			return tx.payment.update({
 				where: { id: current.id },
 				data: {
@@ -165,6 +206,10 @@ const initiate = async (requestId: string, user: RequestUser) => {
 					bkashPaymentId: provider.paymentID,
 					checkoutUrl: provider.bkashURL,
 					initiatedAt: current.initiatedAt || new Date(),
+					gatewayResponse: {
+						...existingGatewayResponse,
+						...(frontendUrl ? { frontendUrl } : {}),
+					},
 				},
 			});
 		});
@@ -178,7 +223,11 @@ const initiate = async (requestId: string, user: RequestUser) => {
 	}
 };
 
-const createDraft = async (requestId: string, userId: string) =>
+const createDraft = async (
+	requestId: string,
+	userId: string,
+	frontendUrl?: string,
+) =>
 	prisma.$transaction(async (tx) => {
 		const request = await tx.serviceRequest.findUnique({
 			where: { id: requestId },
@@ -235,7 +284,25 @@ const createDraft = async (requestId: string, userId: string) =>
 				status: { in: [PaymentStatus.UNPAID, PaymentStatus.PENDING] },
 			},
 		});
-		if (existing) return { existing: true as const, payment: existing };
+		if (existing) {
+			if (frontendUrl) {
+				const existingGatewayResponse =
+					typeof existing.gatewayResponse === "object" &&
+					existing.gatewayResponse !== null
+						? (existing.gatewayResponse as Record<string, unknown>)
+						: {};
+				await tx.payment.update({
+					where: { id: existing.id },
+					data: {
+						gatewayResponse: {
+							...existingGatewayResponse,
+							frontendUrl,
+						},
+					},
+				});
+			}
+			return { existing: true as const, payment: existing };
+		}
 		const payment = await tx.payment.create({
 			data: {
 				serviceRequestId: request.id,
@@ -243,6 +310,7 @@ const createDraft = async (requestId: string, userId: string) =>
 				currency: request.category.feeCurrency,
 				status: PaymentStatus.UNPAID,
 				merchantInvoiceNumber: `CIVIC-${request.id.slice(0, 12)}-${Date.now()}`,
+				gatewayResponse: frontendUrl ? { frontendUrl } : undefined,
 			},
 		});
 		return { existing: false as const, payment };

@@ -3,15 +3,44 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: path.join(process.cwd(), ".env") });
 
+const isProduction =
+	process.env.NODE_ENV === "production" ||
+	process.env.VERCEL === "1" ||
+	Boolean(process.env.VERCEL_ENV) ||
+	Boolean(process.env.BACKEND_URL?.startsWith("https"));
+
+const resolveDefaultFrontendUrl = (): string => {
+	const raw = process.env.FRONTEND_URL?.trim();
+	if (raw) {
+		const urls = raw
+			.split(",")
+			.map((u) => u.trim())
+			.filter(Boolean);
+
+		if (isProduction) {
+			const prodUrl = urls.find(
+				(u) => !u.includes("localhost") && !u.includes("127.0.0.1"),
+			);
+			if (prodUrl) return prodUrl;
+		} else {
+			const localUrl = urls.find(
+				(u) => u.includes("localhost") || u.includes("127.0.0.1"),
+			);
+			if (localUrl) return localUrl;
+			if (urls[0]) return urls[0];
+		}
+	}
+
+	return isProduction
+		? "https://civic-flow-frontend-psi.vercel.app"
+		: "http://localhost:3000";
+};
+
 const config = {
 	node_env: process.env.NODE_ENV || "development",
 	port: Number(process.env.PORT) || 5000,
 	database_url: process.env.DATABASE_URL || "",
-	frontend_url:
-		process.env.FRONTEND_URL ||
-		(process.env.NODE_ENV === "production" || process.env.VERCEL === "1"
-			? "https://civic-flow-frontend-psi.vercel.app"
-			: "http://localhost:3000"),
+	frontend_url: resolveDefaultFrontendUrl(),
 	backend_url: process.env.BACKEND_URL || "https://civic-flow-api.vercel.app",
 	bcrypt_salt_rounds: Number(process.env.BCRYPT_SALT_ROUNDS) || 10,
 	jwt_access_secret:
