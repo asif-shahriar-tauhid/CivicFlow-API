@@ -13,3 +13,4 @@ tests/*
 .env*
 API_RBAC_TEST_CHECKLIST.tex
 implementation.md
+testapi.md

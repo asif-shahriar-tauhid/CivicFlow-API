@@ -152,8 +152,8 @@ State Machine Transitions:
 | **Requests** | `POST` | `/api/v1/requests/:requestId/confirm` | CITIZEN |
 | **Requests** | `POST` | `/api/v1/requests/:requestId/reopen` | CITIZEN |
 | **Requests** | `POST` | `/api/v1/requests/:requestId/route` | ADMIN |
-| **Requests** | `POST` | `/api/v1/requests/:requestId/assign` | ADMIN, STAFF |
-| **Requests** | `POST` | `/api/v1/requests/:requestId/reassign` | ADMIN, STAFF |
+| **Requests** | `POST` | `/api/v1/requests/:requestId/assign` | ADMIN |
+| **Requests** | `POST` | `/api/v1/requests/:requestId/reassign` | ADMIN |
 | **Requests** | `DELETE` | `/api/v1/requests/:requestId` | Any Auth |
 | **Attachments** | `POST` | `/api/v1/requests/:requestId/attachments` | Any Auth |
 | **Attachments** | `GET` | `/api/v1/requests/:requestId/attachments` | Any Auth |

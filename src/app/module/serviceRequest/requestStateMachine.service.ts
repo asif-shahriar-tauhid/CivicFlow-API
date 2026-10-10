@@ -47,14 +47,18 @@ export const canTransition = (
 	if (to === RequestStatus.RESOLVED) {
 		return user.role === Role.ADMIN;
 	}
-	if (user.role === Role.ADMIN) return true;
 	if (user.role === Role.CITIZEN) {
 		return (
 			request.citizenUserId === user.userId &&
 			(to === RequestStatus.CLOSED || to === RequestStatus.REOPENED)
 		);
 	}
-	return user.role === Role.STAFF && request.departmentId === user.departmentId;
+	// When a staff member is assigned to a request, ONLY that assigned staff member can transition it
+	if (request.assignedToId) {
+		return user.role === Role.STAFF && request.assignedToId === user.userId;
+	}
+	// For unassigned intake, municipal administrators evaluate triage/rejection before assignment
+	return user.role === Role.ADMIN;
 };
 
 const canManageRequest = (
@@ -77,10 +81,12 @@ const assertTransition = (
 		);
 	}
 	if (!canTransition(request, to, user)) {
-		throw new AppError(
-			httpStatus.FORBIDDEN,
-			"You are not allowed to perform this request transition.",
-		);
+		const message =
+			request.assignedToId &&
+			(user.role !== Role.STAFF || request.assignedToId !== user.userId)
+				? "Only the assigned staff member is authorized to transition this request status."
+				: "You are not allowed to perform this request transition.";
+		throw new AppError(httpStatus.FORBIDDEN, message);
 	}
 	if (
 		(to === RequestStatus.ASSIGNED ||
